@@ -1,0 +1,42 @@
+{
+ "consecutiveFailures": 0,
+ "lastFailure": null,
+ "lastSuccess": null,
+ "retained": 30,
+ "runs": [
+  {
+   "expectedLatestTradeDate": "2026-10-06",
+   "failureReason": "the exchanges are on different trade dates {'TWSE': '2026-10-05', 'TPEX': '2026-10-06'}: one has not published yet; nothing was published",
+   "finishedAt": "2026-10-06T23:27:27+08:00",
+   "marketDates": {
+    "TPEX": "2026-10-06",
+    "TWSE": "2026-10-05"
+   },
+   "publication": "WAITING",
+   "release": null,
+   "requests": 21,
+   "runId": "20261006T232623",
+   "scheduledSlot": "2026-10-04T10:00:00+08:00",
+   "startedAt": "2026-10-06T23:26:23+08:00",
+   "status": "WAITING",
+   "trigger": "manual"
+  }
+ ],
+ "schemaVersion": 2,
+ "updatedAt": "2026-10-06T23:27:27+08:00",
+ "weekly": {
+  "lastFailureReason": null,
+  "lastScheduledRun": null,
+  "lastSuccessfulPublication": null,
+  "marketAsOf": null,
+  "retryTimes": [
+   "10:00",
+   "14:00",
+   "20:00"
+  ],
+  "scheduledTime": "10:00",
+  "scheduledWeekday": "SUNDAY",
+  "timezone": "Asia/Taipei",
+  "updatePolicy": "WEEKLY"
+ }
+}
