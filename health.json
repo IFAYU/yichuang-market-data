@@ -20,10 +20,27 @@
    "startedAt": "2026-10-06T23:26:23+08:00",
    "status": "WAITING",
    "trigger": "manual"
+  },
+  {
+   "expectedLatestTradeDate": "2026-10-06",
+   "failureReason": "the exchanges are on different trade dates {'TWSE': '2026-10-05', 'TPEX': '2026-10-06'}: one has not published yet; nothing was published",
+   "finishedAt": "2026-10-06T23:35:12+08:00",
+   "marketDates": {
+    "TPEX": "2026-10-06",
+    "TWSE": "2026-10-05"
+   },
+   "publication": "WAITING",
+   "release": null,
+   "requests": 20,
+   "runId": "20261006T233416",
+   "scheduledSlot": "2026-10-04T10:00:00+08:00",
+   "startedAt": "2026-10-06T23:34:16+08:00",
+   "status": "WAITING",
+   "trigger": "manual"
   }
  ],
  "schemaVersion": 2,
- "updatedAt": "2026-10-06T23:27:27+08:00",
+ "updatedAt": "2026-10-06T23:35:12+08:00",
  "weekly": {
   "lastFailureReason": null,
   "lastScheduledRun": null,
