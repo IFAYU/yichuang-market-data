@@ -47,6 +47,10 @@ def main() -> int:
     verdict = classify(manifest, now)
     print(f"freshness now: {verdict['status']} (missed weekly updates: {verdict['missedWeeklyUpdates']})  next: {verdict['nextScheduledPublication']}")
     sched = [r for r in runs if r.get("trigger") == "schedule"]
+    if not sched and published and published >= slot:
+        print("RESULT: NOT_APPLICABLE (no scheduled run for this slot: the current release was published manually / seeded at "
+              f"{manifest.get('lastSuccessfulPublication')}); the first scheduled slot to observe is the next Sunday)")
+        return 2
     ok_idx = next((i for i, r in enumerate(sched) if r.get("status") == "SUCCESS"), None)
     if published and published >= slot and ok_idx is not None:
         before = sched[:ok_idx]
