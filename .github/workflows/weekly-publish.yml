@@ -9,7 +9,12 @@ on:
     - cron: "0 2 * * 0"
     - cron: "0 6 * * 0"
     - cron: "0 12 * * 0"
-  workflow_dispatch: {}   # manual catch-up run, same gate, same rules
+  workflow_dispatch:      # manual catch-up run, same gate, same rules
+    inputs:
+      allow_mixed_dates:
+        description: "EXPLICIT EXCEPTION (seed / migration only): publish although TWSE and TPEx are on different trade dates. Recorded in the manifest gate."
+        type: boolean
+        default: false
 
 concurrency:
   group: weekly-market-data
@@ -53,7 +58,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python -m mitw.cli run --trigger "${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}"
+          python -m mitw.cli run --trigger "${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}" ${{ inputs.allow_mixed_dates && '--allow-mixed-dates' || '' }}
           echo "rc=$?" >> "$GITHUB_OUTPUT"
 
       # Publication to the public site, in this order:
