@@ -1,0 +1,3 @@
+PIPELINE_VERSION = "0.4.0"
+# Version of the static JSON contract the future consumer (risk-profiler) depends on. Bump on any breaking change.
+SNAPSHOT_SCHEMA_VERSION = "1.4.0"  # 1.1.0: + shortName, revenue.  1.2.0: officialPE.basis INFERRED_TTM -> OFFICIAL_TTM (exchange definition), + officialPEDefinition.  1.3.0: freshness contract — manifest.release / sourceFetchedAt / publishedAt / freshnessAtPublish / gate, files[].path (releases/<hash>/), + sourceFetchedAt in both documents  1.4.0: weekly update policy (Phase 3D.3A) — manifest.updatePolicy / timezone / scheduledWeekday / scheduledTime / retryTimes / lastSuccessfulPublication / nextScheduledPublication; freshnessAtPublish is schedule-based

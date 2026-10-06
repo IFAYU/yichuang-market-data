@@ -1,0 +1,102 @@
+name: weekly-market-data
+
+# WEEKLY publication policy (Phase 3D.3A / 3D.4): Sundays 10:00, 14:00, 20:00 Asia/Taipei.
+# GitHub cron is UTC and Taiwan has no daylight saving time (UTC+8), so:
+#   10:00 Taipei = 02:00 UTC    14:00 Taipei = 06:00 UTC    20:00 Taipei = 12:00 UTC   (all the same Sunday in both zones)
+# `mitw run` is idempotent: once this week's publication has succeeded, the later slots make ZERO requests (NOOP).
+on:
+  schedule:
+    - cron: "0 2 * * 0"
+    - cron: "0 6 * * 0"
+    - cron: "0 12 * * 0"
+  workflow_dispatch: {}   # manual catch-up run, same gate, same rules
+
+concurrency:
+  group: weekly-market-data
+  cancel-in-progress: false
+
+# No secrets are used anywhere: the built-in GITHUB_TOKEN may push to the `data` branch of THIS repository, nothing else.
+permissions:
+  contents: write
+
+env:
+  PAGES_URL: https://ifayu.github.io/yichuang-market-data
+  TZ: Asia/Taipei
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout pipeline (main)
+        uses: actions/checkout@v4
+
+      - name: Checkout the published data (branch `data` = what GitHub Pages serves) into out/
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: out
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Tests
+        run: python -m unittest discover -s tests -t .
+
+      # fetch (only what is needed) -> validate -> normalize -> calculate -> gate -> immutable release -> manifest.json LAST (locally).
+      - name: Run the weekly pipeline
+        id: run
+        shell: bash
+        run: |
+          set +e
+          python -m mitw.cli run --trigger "${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}"
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+
+      # Publication to the public site, in this order:
+      #   1. push the immutable release (no manifest yet: nobody is pointed at it)
+      #   2. wait until the PUBLIC site serves its files with the exact sha256 in the manifest
+      #   3. only then push manifest.json (+ health.json): the Last Known Good is replaced
+      # Any failure before step 3 leaves the live manifest, and therefore what every visitor sees, exactly as it was.
+      - name: Publish (release first, manifest last)
+        shell: bash
+        run: |
+          set -uo pipefail
+          RC="${{ steps.run.outputs.rc }}"
+          cd out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- manifest.json)" ]; then
+            REL=$(python -c "import json;print(json.load(open('manifest.json'))['release'])")
+            echo "new release $REL"
+            git add -A releases
+            git commit -m "release $REL (immutable; not live until manifest.json points at it)"
+            git push origin HEAD:data
+            cd ..
+            if python -m mitw.cli verify-remote --base "$PAGES_URL" --release "$REL" --timeout 900; then
+              cd out
+              git add manifest.json health.json
+              git commit -m "publish $REL"
+              git push origin HEAD:data
+            else
+              cd out
+              git checkout HEAD -- manifest.json
+              cd ..
+              python -m mitw.cli mark-failed --reason "release $REL could not be read back from the public site; manifest.json was NOT updated"
+              cd out
+              git add health.json
+              git commit -m "health: release $REL not readable, manifest unchanged"
+              git push origin HEAD:data
+              RC=1
+            fi
+          else
+            git add health.json
+            if ! git diff --cached --quiet; then
+              git commit -m "health: run record"
+              git push origin HEAD:data
+            fi
+          fi
+          exit "${RC:-0}"
