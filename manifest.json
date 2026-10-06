@@ -1,0 +1,101 @@
+{
+ "companyCount": 1988,
+ "files": {
+  "industry-snapshots.json": {
+   "bytes": 461641,
+   "path": "releases/d9ade43bed29/industry-snapshots.json",
+   "sha256": "cd449e89fdf7b819ca91854354d243720cd0b6167bd55b1bf7b0dd4492d16bd3"
+  },
+  "market-snapshot.json": {
+   "bytes": 3703407,
+   "path": "releases/d9ade43bed29/market-snapshot.json",
+   "sha256": "7609e872b9ea25f112bf99c02cada372cca74337ed88e75bdc0e698de059b2f5"
+  }
+ },
+ "financialAsOf": {
+  "epsPeriod": "2026Q2",
+  "eps_basis": "CUMULATIVE_YTD",
+  "monthlyRevenuePeriod": "2026-08"
+ },
+ "freshnessAtPublish": {
+  "calendarNote": "weekends only; exchange holidays are not modelled (conservative: a holiday counts as a missed trading day)",
+  "expectedLatestTradeDate": "2026-10-06",
+  "marketAgeTradingDays": 1,
+  "missedWeeklyUpdates": 0,
+  "status": "FRESH"
+ },
+ "gate": {
+  "checks": [
+   {
+    "detail": "schemaVersion ['1.4.0'], supported 1.x",
+    "name": "schema",
+    "ok": true
+   },
+   {
+    "detail": "coverage and statistics consistent",
+    "name": "coverage",
+    "ok": true
+   },
+   {
+    "detail": "outlier policy, fences and percentile definition present; official P/E basis OFFICIAL_TTM",
+    "name": "methodology",
+    "ok": true
+   },
+   {
+    "detail": "marketAsOf={'TWSE': '2026-10-05', 'TPEX': '2026-10-06'}",
+    "name": "market-date-present",
+    "ok": true
+   },
+   {
+    "detail": "EXCEPTION: mixed dates allowed explicitly ({'TWSE': '2026-10-05', 'TPEX': '2026-10-06'})",
+    "name": "market-date-same",
+    "ok": true
+   },
+   {
+    "detail": "no previous publication to compare with",
+    "name": "not-older-than-latest",
+    "ok": true
+   },
+   {
+    "detail": "no previous publication to compare with",
+    "name": "market-date-advances",
+    "ok": true
+   },
+   {
+    "detail": "candidate would be FRESH (market age 1 trading days, informational)",
+    "name": "freshness-determinable",
+    "ok": true
+   }
+  ],
+  "exceptions": [
+   {
+    "allowedExplicitly": true,
+    "code": "MIXED_MARKET_DATES",
+    "detail": "TWSE 2026-10-05 vs TPEx 2026-10-06"
+   }
+  ],
+  "passed": true
+ },
+ "generatedAt": "2026-10-06T23:35:56+08:00",
+ "lastSuccessfulPublication": "2026-10-06T23:35:56+08:00",
+ "marketAsOf": {
+  "TPEX": "2026-10-06",
+  "TWSE": "2026-10-05"
+ },
+ "nextScheduledPublication": "2026-10-11T10:00:00+08:00",
+ "publishedAt": "2026-10-06T23:35:56+08:00",
+ "release": "d9ade43bed29",
+ "retryTimes": [
+  "10:00",
+  "14:00",
+  "20:00"
+ ],
+ "runDate": "2026-10-06",
+ "scheduledTime": "10:00",
+ "scheduledWeekday": "SUNDAY",
+ "schemaVersion": "1.4.0",
+ "sourceFetchedAt": "2026-10-06T23:37:19+08:00",
+ "sourceHash": "d9ade43bed29f30ddf58febe7f1f0ddb7137d5875ee742bc798961dcd349b2df",
+ "timezone": "Asia/Taipei",
+ "updatePolicy": "WEEKLY"
+}
