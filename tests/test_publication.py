@@ -279,8 +279,11 @@ class RunnerTests(unittest.TestCase):
         self.manifest(out, "2026-10-02", "2026-10-02", published="2026-10-04T10:12:00")
         for i, hhmm in enumerate(("10:00", "14:00", "20:00")):  # the three Sunday attempts of 2026-10-11
             record(RunRecord(runId=f"a{i}", startedAt=f"2026-10-11T{hhmm}:00+08:00", runDate="2026-10-11", status="FAILED"), runs)
-        r = run_once(now_fn=lambda: datetime(2026, 10, 11, 21, 0), raw_dir=raw, out_dir=out, runs_dir=runs, fetch=self.never, db_path=None)
+        r = run_once(trigger="schedule", now_fn=lambda: datetime(2026, 10, 11, 21, 0), raw_dir=raw, out_dir=out, runs_dir=runs, fetch=self.never, db_path=None)
         self.assertEqual((r.status, r.requests), ("SKIPPED", 0))
+        # a person pressing "run" (workflow_dispatch) is not the retry loop: it is never refused by the weekly cap
+        m = run_once(trigger="manual", now_fn=lambda: datetime(2026, 10, 11, 21, 5), raw_dir=raw, out_dir=out, runs_dir=runs, fetch=self.never, db_path=None)
+        self.assertNotEqual(m.status, "SKIPPED")
 
     def test_attempts_of_an_earlier_week_do_not_count(self):
         out, runs, raw = self.dirs()

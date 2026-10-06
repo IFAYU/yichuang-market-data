@@ -109,11 +109,11 @@ def run_once(trigger: str = "manual", now_fn: Callable[[], datetime] = now_taipe
             return _finish(rec, now_fn, runs_dir, out_dir)
 
         attempts = [r for r in load_runs(runs_dir) if r.get("status") in COUNTED and (parse_instant(r.get("startedAt")) or slot) >= slot]
-        if len(attempts) >= MAX_ATTEMPTS_PER_SLOT:
+        if len(attempts) >= MAX_ATTEMPTS_PER_SLOT and trigger != "manual":  # a person pressing 'run' is not the retry loop
             rec.status = "SKIPPED"
             rec.failureReason = f"retry limit reached for this week's slot ({MAX_ATTEMPTS_PER_SLOT} attempts since {rec.scheduledSlot}); next chance is the next scheduled slot"
             return _finish(rec, now_fn, runs_dir, out_dir)
-        final_attempt = len(attempts) + 1 >= MAX_ATTEMPTS_PER_SLOT
+        final_attempt = trigger != "manual" and len(attempts) + 1 >= MAX_ATTEMPTS_PER_SLOT  # only the scheduled retries close a week
 
         partition = next_partition(raw_dir, run_date)
         rec.partition = partition
