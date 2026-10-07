@@ -1,0 +1,297 @@
+{
+ "_doc": "Hand-calculated freshness vectors for the DAILY_TRADING_DAY policy (Phase 3I.1, revised 3I.2: TWSE target from D+1 06:30, TPEx / 興櫃 from D 21:00, pending counted per market from its own first attempt). The Python engine (mitw/daily.py) and its TypeScript twin (risk-profiler dailyFreshness.ts) must both reproduce every row; a test in each project checks that the two copies of this file are identical. The calendar is the official TWSE holidaySchedule of 2026 (covers 2026 only: a weekday in 2027 is UNKNOWN).",
+ "calendarFixture": "twse_holiday_schedule_2026.json",
+ "publicationPolicy": {
+  "policy": "DAILY_TRADING_DAY",
+  "timezone": "Asia/Taipei",
+  "scheduleWeekdays": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "attempts": [
+   "21:00",
+   "22:00",
+   "23:00"
+  ],
+  "windowClosesAt": "24:00",
+  "markets": {
+   "TWSE": {
+    "offsetDays": 1,
+    "expectedBy": "06:30",
+    "firstAttempt": "06:30",
+    "earliestSeen": "05:00",
+    "basis": "EMPIRICALLY_OBSERVED",
+    "evidence": "Last-Modified 05:20:4x Taipei on D+1 for D=2026-10-05 and D=2026-10-06 (2 observations; weekend D+1 not yet observed). Operational target 06:30 (not a guarantee)"
+   },
+   "TPEX": {
+    "offsetDays": 0,
+    "expectedBy": "21:00",
+    "firstAttempt": "21:00",
+    "earliestSeen": "18:00",
+    "basis": "EMPIRICALLY_OBSERVED",
+    "evidence": "Last-Modified 18:00 on D=2026-10-06 and 22:00 on D=2026-10-07 (2 observations; cadence between them unknown). Operational target: first attempt 21:00 (not a guarantee)"
+   },
+   "EMERGING": {
+    "offsetDays": 0,
+    "expectedBy": "21:00",
+    "firstAttempt": "21:00",
+    "earliestSeen": "18:00",
+    "basis": "EMPIRICALLY_OBSERVED",
+    "evidence": "tpex_esb_latest_statistics Last-Modified 22:00:18 on D=2026-10-07 (1 observation); same TPEx platform as the main board. Operational target: first attempt 21:00 (not a guarantee)"
+   }
+  },
+  "calendar": {
+   "source": "TWSE_OPENAPI_holidaySchedule",
+   "fetchedAt": "2026-10-07T23:10:00+08:00",
+   "coveredFrom": "2026-01-01",
+   "coveredTo": "2026-12-31",
+   "closedDates": [
+    "2026-01-01",
+    "2026-02-12",
+    "2026-02-13",
+    "2026-02-16",
+    "2026-02-17",
+    "2026-02-18",
+    "2026-02-19",
+    "2026-02-20",
+    "2026-02-27",
+    "2026-04-03",
+    "2026-04-06",
+    "2026-05-01",
+    "2026-06-19",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-10-09",
+    "2026-10-26",
+    "2026-12-25"
+   ],
+   "extraClosures": [],
+   "manualClosures": []
+  }
+ },
+ "cases": [
+  {
+   "id": "twse-wed-noon-published-tue",
+   "market": "TWSE",
+   "published": "2026-10-06",
+   "now": "2026-10-07T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-05",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "twse-wed-noon-published-mon",
+   "market": "TWSE",
+   "published": "2026-10-05",
+   "now": "2026-10-07T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-05",
+   "lag": 0,
+   "pending": true
+  },
+  {
+   "id": "twse-thu-noon-published-mon",
+   "market": "TWSE",
+   "published": "2026-10-05",
+   "now": "2026-10-08T12:00:00+08:00",
+   "status": "STALE",
+   "expected": "2026-10-06",
+   "lag": 1,
+   "pending": true
+  },
+  {
+   "id": "twse-thu-2130-published-mon-pending",
+   "market": "TWSE",
+   "published": "2026-10-05",
+   "now": "2026-10-08T21:30:00+08:00",
+   "status": "STALE",
+   "expected": "2026-10-06",
+   "lag": 1,
+   "pending": true
+  },
+  {
+   "id": "tpex-wed-2130-published-wed",
+   "market": "TPEX",
+   "published": "2026-10-07",
+   "now": "2026-10-07T21:30:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-06",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "tpex-wed-2130-published-tue-pending",
+   "market": "TPEX",
+   "published": "2026-10-06",
+   "now": "2026-10-07T21:30:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-06",
+   "lag": 0,
+   "pending": true
+  },
+  {
+   "id": "tpex-thu-noon-published-tue",
+   "market": "TPEX",
+   "published": "2026-10-06",
+   "now": "2026-10-08T12:00:00+08:00",
+   "status": "STALE",
+   "expected": "2026-10-07",
+   "lag": 1,
+   "pending": false
+  },
+  {
+   "id": "tpex-thu-noon-published-mon",
+   "market": "TPEX",
+   "published": "2026-10-05",
+   "now": "2026-10-08T12:00:00+08:00",
+   "status": "SEVERELY_STALE",
+   "expected": "2026-10-07",
+   "lag": 2,
+   "pending": false
+  },
+  {
+   "id": "tpex-sat-after-thu-then-holiday-friday",
+   "market": "TPEX",
+   "published": "2026-10-08",
+   "now": "2026-10-10T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-08",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "tpex-mon-noon-after-holiday-friday",
+   "market": "TPEX",
+   "published": "2026-10-08",
+   "now": "2026-10-12T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-08",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "tpex-tue-noon-published-thu",
+   "market": "TPEX",
+   "published": "2026-10-08",
+   "now": "2026-10-13T12:00:00+08:00",
+   "status": "STALE",
+   "expected": "2026-10-12",
+   "lag": 1,
+   "pending": false
+  },
+  {
+   "id": "twse-holiday-friday-noon",
+   "market": "TWSE",
+   "published": "2026-10-07",
+   "now": "2026-10-09T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-07",
+   "lag": 0,
+   "pending": true
+  },
+  {
+   "id": "lunar-new-year-tpex-fresh-through-closure",
+   "market": "TPEX",
+   "published": "2026-02-11",
+   "now": "2026-02-19T12:00:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-02-11",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "lunar-new-year-twse-missed-catch-up",
+   "market": "TWSE",
+   "published": "2026-02-10",
+   "now": "2026-02-19T12:00:00+08:00",
+   "status": "STALE",
+   "expected": "2026-02-11",
+   "lag": 1,
+   "pending": true
+  },
+  {
+   "id": "calendar-unknown-next-year",
+   "market": "TPEX",
+   "published": "2026-12-30",
+   "now": "2027-01-05T12:00:00+08:00",
+   "status": "UNKNOWN",
+   "expected": null,
+   "lag": null,
+   "pending": false
+  },
+  {
+   "id": "future-market-date",
+   "market": "TPEX",
+   "published": "2026-10-09",
+   "now": "2026-10-07T12:00:00+08:00",
+   "status": "UNKNOWN",
+   "expected": null,
+   "lag": null,
+   "pending": false
+  },
+  {
+   "id": "no-market-date",
+   "market": "TPEX",
+   "published": null,
+   "now": "2026-10-07T12:00:00+08:00",
+   "status": "UNKNOWN",
+   "expected": null,
+   "lag": null,
+   "pending": false
+  },
+  {
+   "id": "emerging-wed-2130-published-tue-pending",
+   "market": "EMERGING",
+   "published": "2026-10-06",
+   "now": "2026-10-07T21:30:00+08:00",
+   "status": "FRESH",
+   "expected": "2026-10-06",
+   "lag": 0,
+   "pending": true
+  },
+  {
+   "id": "mixed-dates-twse-t-minus-1-fresh",
+   "market": "TWSE",
+   "published": "2026-10-07",
+   "now": "2026-10-08T22:30:00+08:00",
+   "expected": "2026-10-06",
+   "status": "FRESH",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "mixed-dates-tpex-t-fresh",
+   "market": "TPEX",
+   "published": "2026-10-08",
+   "now": "2026-10-08T22:30:00+08:00",
+   "expected": "2026-10-07",
+   "status": "FRESH",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "twse-holiday-friday-after-catch-up",
+   "market": "TWSE",
+   "published": "2026-10-08",
+   "now": "2026-10-09T07:00:00+08:00",
+   "expected": "2026-10-07",
+   "status": "FRESH",
+   "lag": 0,
+   "pending": false
+  },
+  {
+   "id": "twse-t-minus-2-is-not-fully-current",
+   "market": "TWSE",
+   "published": "2026-10-06",
+   "now": "2026-10-09T12:00:00+08:00",
+   "expected": "2026-10-07",
+   "status": "STALE",
+   "lag": 1,
+   "pending": true
+  }
+ ]
+}

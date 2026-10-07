@@ -7,8 +7,13 @@ Writes   <out>/emerging/manifest.json   and   <out>/emerging/releases/<release>/
 Official facts only (no price is chosen, no P/B is computed, no P/E exists): the app derives those with the audited Phase 3H.1 rules, so the
 price / P/B logic has ONE implementation. Official JSON only: no HTML, no third-party site, no browser automation.
 
-It is NOT part of the weekly pipeline: it does not import mitw, does not touch out/, manifest.json, health.json or releases/ of the weekly
-snapshot, and publishes nothing. A future publisher would write only under emerging/.
+It is NOT part of the weekly pipeline: in the default mode it does not import mitw, does not touch out/, manifest.json, health.json or releases/ of
+the weekly snapshot, and publishes nothing. A future publisher would write only under emerging/.
+
+--daily (Phase 3I.1, STAGED, not activated by any workflow) adds the trading-day-aware decision of mitw/daily.py for emerging ALONE:
+    python scripts/build_emerging_snapshot.py --daily --fetch --api <dir> --out <dir> --calendar <holidaySchedule.json> --current-manifest <published emerging/manifest.json>
+  precheck (zero requests when nothing is owed) -> fetch -> snapshot-level market date from the MARKET aggregate (tpex_esb_highlight.Date), never from one
+  company's fallback price -> evaluate -> write the release + manifest LAST only when the decision is to publish. It prints one JSON decision line.
 """
 from __future__ import annotations
 
@@ -28,6 +33,7 @@ INPUTS = {
     "balance": "esb_bs_ci_U",                 # balance sheet, includes 每股參考淨值
     "income": "esb_is_ci_U",                  # income statement (year-to-date)
     "revenue": "esb_rev_R",                   # monthly revenue
+    "highlight": "tpex_esb_highlight",        # market-level aggregate (Date, RegisteredStocksNumber): the authority for the SNAPSHOT's market date
 }
 SOURCES = {
     "quotes": "https://www.tpex.org.tw/openapi/v1/tpex_esb_latest_statistics",
@@ -35,6 +41,7 @@ SOURCES = {
     "balance": "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap07_U_ci",
     "income": "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap06_U_ci",
     "revenue": "https://www.tpex.org.tw/openapi/v1/t187ap05_R",
+    "highlight": "https://www.tpex.org.tw/openapi/v1/tpex_esb_highlight",
 }
 UA = {"User-Agent": "yichuang-market-data emerging snapshot builder (read-only)", "Accept": "application/json"}
 TAIPEI = timezone(timedelta(hours=8))
@@ -93,8 +100,31 @@ def par_value(s):
     return float(m.group(1)) if m else None
 
 
-def build(api: Path, now: datetime) -> tuple[dict, bytes]:
-    d = {k: load(api / f"{v}.json") for k, v in INPUTS.items()}
+def snapshot_market_date(highlight_rows, quote_rows) -> tuple:
+    """The SNAPSHOT's market date comes from the market-level aggregate (tpex_esb_highlight.Date), cross-checked against every quote row's Date and the
+    registered-stock count. One company having no trade today (its quote falls back to the previous average) says nothing about the market date.
+    Returns (YYYY-MM-DD | None, problems)."""
+    problems = []
+    hl = highlight_rows[0] if isinstance(highlight_rows, list) and len(highlight_rows) == 1 and isinstance(highlight_rows[0], dict) else None
+    hd = roc_date(hl.get("Date")) if hl else None
+    if hd is None:
+        problems.append("HIGHLIGHT_DATE_MISSING_OR_MALFORMED")
+    qd = {roc_date(r.get("Date")) for r in quote_rows}
+    if None in qd:
+        problems.append("QUOTE_DATE_MISSING_OR_MALFORMED")
+    qd.discard(None)
+    if len(qd) > 1:
+        problems.append(f"QUOTE_DATES_DIFFER: {sorted(qd)}")
+    if hd is not None and qd and qd != {hd}:
+        problems.append(f"HIGHLIGHT_DATE_{hd}_DIFFERS_FROM_QUOTE_DATES_{sorted(qd)}")
+    if hl and num(hl.get("RegisteredStocksNumber")) is not None and int(num(hl["RegisteredStocksNumber"])) != len(quote_rows):
+        problems.append(f"REGISTERED_COUNT_{hl['RegisteredStocksNumber']}_DIFFERS_FROM_QUOTE_ROWS_{len(quote_rows)}")
+    return hd, problems
+
+
+def build(api: Path, now: datetime, daily: bool = False) -> tuple[dict, bytes]:
+    d = {k: load(api / f"{v}.json") for k, v in INPUTS.items() if k != "highlight"}
+    highlight = load(api / f"{INPUTS['highlight']}.json") if (api / f"{INPUTS['highlight']}.json").exists() else None
     master = {r["SecuritiesCompanyCode"]: r for r in d["master"]}
     bal = {r["公司代號"]: r for r in d["balance"]}
     inc = {r["SecuritiesCompanyCode"]: r for r in d["income"]}
@@ -141,9 +171,14 @@ def build(api: Path, now: datetime) -> tuple[dict, bytes]:
     dates = sorted({c["quoteDate"] for c in companies if c["quoteDate"]})
     bv = sorted({c["bvps"]["period"] for c in companies if c["bvps"]["period"]})
     ev = sorted({c["ytd"]["period"] for c in companies if c["ytd"]["period"]})
+    market_date = dates[-1] if dates else None
+    if daily:
+        market_date, problems = snapshot_market_date(highlight, d["quotes"])
+        if problems:
+            raise SystemExit("MARKET_DATE_VALIDATION_FAILED: " + "; ".join(problems))
     doc = {
-        "schemaVersion": SCHEMA, "kind": "emerging-snapshot", "generatedAt": now.isoformat(timespec="seconds"),
-        "marketAsOf": {"EMERGING": dates[-1] if dates else None},
+        "schemaVersion": SCHEMA, "kind": "emerging-snapshot", **({} if daily else {"generatedAt": now.isoformat(timespec="seconds")}),
+        "marketAsOf": {"EMERGING": market_date},
         "financialAsOf": {"epsPeriod": ev[-1] if ev else None, "bvpsPeriod": bv[-1] if bv else None},
         "sources": SOURCES, "companies": companies,
         # informational coverage numbers (the app derives price / P/B itself from the raw facts)
@@ -151,9 +186,91 @@ def build(api: Path, now: datetime) -> tuple[dict, bytes]:
             "quotes": len(companies), "masterRecords": len(master), "balanceSheets": len(bal), "incomeStatements": len(inc), "monthlyRevenue": len(rev),
             "tradedToday": sum(1 for c in companies if (c["quote"]["avg"] or 0) > 0 and (c["quote"]["volume"] or 0) > 0),
             "bvpsPresent": sum(1 for c in companies if c["bvps"]["value"] is not None),
+            "previousDayFallback": sum(1 for c in companies if not ((c["quote"]["avg"] or 0) > 0 and (c["quote"]["volume"] or 0) > 0) and (c["quote"]["prevAvg"] or 0) > 0),
+            "pbComputable": sum(1 for c in companies if (c["bvps"]["value"] or 0) > 0 and (((c["quote"]["avg"] or 0) > 0 and (c["quote"]["volume"] or 0) > 0) or (c["quote"]["prevAvg"] or 0) > 0)),
         },
     }
     return doc, json.dumps(doc, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def write_release(out: Path, doc: dict, blob: bytes, now: datetime, policy: str, extra: dict | None = None, release_json: bool = False) -> dict:
+    sha = hashlib.sha256(blob).hexdigest()
+    release = sha[:12]
+    base = Path(out) / "emerging"
+    rel = base / "releases" / release
+    rel.mkdir(parents=True, exist_ok=True)
+    (rel / "emerging-snapshot.json").write_bytes(blob)  # the release first ...
+    manifest = {
+        "schemaVersion": SCHEMA, "kind": "emerging-manifest", "release": release, "sourceHash": sha,
+        "generatedAt": doc.get("generatedAt") or now.isoformat(timespec="seconds"), "publishedAt": now.isoformat(timespec="seconds"), "updatePolicy": policy,
+        "lastSuccessfulPublication": now.isoformat(timespec="seconds"), "marketAsOf": doc["marketAsOf"], "financialAsOf": doc["financialAsOf"],
+        "companyCount": len(doc["companies"]),
+        "files": {"emerging-snapshot.json": {"sha256": sha, "bytes": len(blob), "path": f"releases/{release}/emerging-snapshot.json"}},
+        **(extra or {}),
+    }
+    if release_json:  # daily mode: the release carries its own publication record (retention reads its publishedAt); still written BEFORE the manifest
+        (rel / "release.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
+    (base / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")  # ... the manifest LAST
+    return manifest
+
+
+def run_daily(a) -> int:
+    """STAGED daily decision for emerging alone. Needs mitw/daily.py (pure functions); never touches the weekly files."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from mitw import daily as D
+    from mitw.trading_calendar import from_twse_holiday_schedule
+
+    now = D.to_taipei(datetime.fromisoformat(a.now) if a.now else datetime.now(TAIPEI))
+    cal = from_twse_holiday_schedule(json.loads(Path(a.calendar).read_text(encoding="utf-8-sig")), now.isoformat(timespec="seconds"))
+    cur = json.loads(Path(a.current_manifest).read_text(encoding="utf-8")) if a.current_manifest and Path(a.current_manifest).exists() else None
+    published = {"EMERGING": D.parse_market_date(((cur or {}).get("marketAsOf") or {}).get("EMERGING"))}
+    final = D.is_final_attempt(now, a.trigger)
+    av = D.AVAILABILITY["EMERGING"]
+    base = {"market": "EMERGING", "businessTimeTaipei": now.isoformat(timespec="seconds"), "attemptType": D.attempt_label(now), "final": final, "trigger": a.trigger,
+            "previousPublishedMarketDate": cur and (cur.get("marketAsOf") or {}).get("EMERGING"), "lastKnownGood": cur and cur.get("release"),
+            "availabilityBasis": av.basis, "evidenceLevel": D.EVIDENCE_LEVEL, "manifestUpdated": False, "lastKnownGoodPreserved": True, "publicVerification": "NOT_APPLICABLE"}
+    pre = D.precheck(now, published, cal, D.EMERGING_MARKETS)
+    if not pre.fetch:
+        print(json.dumps({**base, "decision": pre.state, "state": pre.state, "requests": 0, "reason": pre.reason, "expectedMarketDate": pre.targets.get("EMERGING"),
+                          "actualSourceMarketDate": None, "releaseId": base["lastKnownGood"]}, ensure_ascii=False))
+        return 0
+
+    def failed(kind: str, msg: str) -> int:
+        dec = D.evaluate(now, published, {"EMERGING": D.Obs(kind, None, msg[:300])}, cal, D.EMERGING_MARKETS, final)
+        print(json.dumps({**base, "decision": dec.state, "state": dec.state, "publish": False, "reason": dec.reason, "expectedMarketDate": dec.targets.get("EMERGING"),
+                          "actualSourceMarketDate": None, "releaseId": base["lastKnownGood"]}, ensure_ascii=False))
+        return 1
+
+    try:
+        if a.fetch:
+            fetch_all(Path(a.api))
+        doc, blob = build(Path(a.api), now, daily=True)
+    except SystemExit as e:
+        msg = str(e)
+        return failed("MALFORMED" if msg.startswith("MARKET_DATE_VALIDATION_FAILED") else "ERROR", msg)
+    except Exception as e:  # network / JSON problems: the source failed, the Last Known Good stays
+        return failed("ERROR", f"{type(e).__name__}: {e}")
+    obs = {"EMERGING": D.Obs("OK", D.parse_market_date(doc["marketAsOf"]["EMERGING"]))}
+    dec = D.evaluate(now, published, obs, cal, D.EMERGING_MARKETS, final)
+    c = doc["counts"]
+    out = {**base, "decision": dec.state, "state": dec.state, "publish": dec.publish, "reason": dec.reason, "expectedMarketDate": dec.targets.get("EMERGING"),
+           "actualSourceMarketDate": doc["marketAsOf"]["EMERGING"], "marketDate": doc["marketAsOf"]["EMERGING"], "releaseId": base["lastKnownGood"],
+           "quoteCount": c["quotes"], "companyCount": len(doc["companies"]), "currentDayPriceCount": c["tradedToday"], "previousDayFallbackCount": c["previousDayFallback"],
+           "bvpsCoverage": c["bvpsPresent"], "pbCoverage": c["pbComputable"], "sourceCounts": {"quotes": c["quotes"], "masterRecords": c["masterRecords"], "balanceSheets": c["balanceSheets"],
+                                                                                              "incomeStatements": c["incomeStatements"], "monthlyRevenue": c["monthlyRevenue"]}}
+    if dec.publish:
+        sha = hashlib.sha256(blob).hexdigest()
+        if cur and cur.get("sourceHash") == sha:  # same content, same market date: nothing new to say
+            out.update(state=D.NOOP_ALREADY_PUBLISHED, publish=False, reason="identical content to the Last Known Good")
+        else:
+            m = write_release(Path(a.out), doc, blob, now, D.POLICY, {"publicationPolicy": D.publication_policy(cal, markets=D.EMERGING_MARKETS)}, release_json=True)
+            from mitw.retention import prune_daily
+            pruned = prune_daily(Path(a.out) / "emerging" / "releases", now, protect={m["release"], (cur or {}).get("release") or m["release"]})
+            out.update(release=m["release"], releaseId=m["release"], companyCount=m["companyCount"], sourceHash=sha, manifestUpdated=True,
+                       publicVerification="PENDING_PUBLIC_READBACK", pruned=pruned)
+    print(json.dumps(out, ensure_ascii=False))
+    return 1 if out["state"].startswith("FAILED") else 0  # a failed attempt must show as a failed job; the Last Known Good is untouched either way
 
 
 def main() -> None:
@@ -161,26 +278,22 @@ def main() -> None:
     ap.add_argument("--api", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--fetch", action="store_true", help="download the official datasets into --api first")
+    ap.add_argument("--daily", action="store_true", help="STAGED: trading-day-aware decision (needs --calendar); default mode is the 3H.2B manual build")
+    ap.add_argument("--calendar", help="official TWSE holidaySchedule JSON (daily mode)")
+    ap.add_argument("--current-manifest", help="the published emerging/manifest.json = the Last Known Good (daily mode)")
+    ap.add_argument("--now", help="override the clock (tests)")
+    ap.add_argument("--trigger", default="schedule", choices=["schedule", "manual"])
     a = ap.parse_args()
+    if a.daily:
+        if not a.calendar:
+            raise SystemExit("--daily needs --calendar (the official holiday list): the decision never assumes every weekday trades")
+        raise SystemExit(run_daily(a))
     if a.fetch:
         fetch_all(Path(a.api))
     now = datetime.now(TAIPEI)
     doc, blob = build(Path(a.api), now)
-    sha = hashlib.sha256(blob).hexdigest()
-    release = sha[:12]
-    base = Path(a.out) / "emerging"
-    rel = base / "releases" / release
-    rel.mkdir(parents=True, exist_ok=True)
-    (rel / "emerging-snapshot.json").write_bytes(blob)  # the release first ...
-    manifest = {
-        "schemaVersion": SCHEMA, "kind": "emerging-manifest", "release": release, "sourceHash": sha,
-        "generatedAt": doc["generatedAt"], "publishedAt": now.isoformat(timespec="seconds"), "updatePolicy": "WEEKLY",
-        "lastSuccessfulPublication": now.isoformat(timespec="seconds"), "marketAsOf": doc["marketAsOf"], "financialAsOf": doc["financialAsOf"],
-        "companyCount": len(doc["companies"]),
-        "files": {"emerging-snapshot.json": {"sha256": sha, "bytes": len(blob), "path": f"releases/{release}/emerging-snapshot.json"}},
-    }
-    (base / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")  # ... the manifest LAST
-    print(f"release {release}: {len(doc['companies'])} companies, marketAsOf {doc['marketAsOf']['EMERGING']}, bvps {doc['financialAsOf']['bvpsPeriod']}, counts {json.dumps(doc['counts'])}")
+    m = write_release(Path(a.out), doc, blob, now, "WEEKLY")
+    print(f"release {m['release']}: {len(doc['companies'])} companies, marketAsOf {doc['marketAsOf']['EMERGING']}, bvps {doc['financialAsOf']['bvpsPeriod']}, counts {json.dumps(doc['counts'])}")
 
 
 if __name__ == "__main__":

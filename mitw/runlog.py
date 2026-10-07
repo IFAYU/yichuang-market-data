@@ -24,6 +24,16 @@ from .config import MAX_RUN_RECORDS, OUT_DIR, RUNS_DIR
 STATUSES = ("SUCCESS", "NOOP", "WAITING", "REFUSED", "FAILED", "SKIPPED")
 HEALTHY = ("SUCCESS", "NOOP")
 PROBLEM = ("FAILED", "REFUSED")
+# Phase 3I.2: the daily policy records its own state names (FAILED_NO_NEW_MARKET_DATA, FAILED_SOURCE, FAILED_VALIDATION, FAILED_PUBLICATION, SUCCESS_PARTIAL, ...).
+# Weekly names behave exactly as before.
+
+
+def is_problem(status) -> bool:
+    return status in PROBLEM or (isinstance(status, str) and status.startswith("FAILED_"))
+
+
+def is_success(status) -> bool:
+    return status in ("SUCCESS", "SUCCESS_PARTIAL")
 
 
 @dataclass
@@ -84,6 +94,18 @@ def restore_from_health(out_dir: Path = OUT_DIR, runs_dir: Path = RUNS_DIR) -> i
     return n
 
 
+def mark_last_run_verified(release: str, now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR, daily: Optional[dict] = None) -> Optional[dict]:
+    """The public site served the release with the manifest's sha256: say so in the run record (Phase 3I.2 observability: publicVerification)."""
+    runs = load_runs(runs_dir)
+    last = next((r for r in reversed(runs) if (r.get("publication") or {}).get("release") == release), None)
+    if not last:
+        return None
+    last.setdefault("publication", {}).setdefault("daily", {})["publicVerification"] = "VERIFIED_PUBLIC_READBACK"
+    write_atomic(Path(runs_dir) / f"{last['runId']}.json", json.dumps(last, ensure_ascii=False, indent=1))
+    write_health(now_iso, runs_dir, out_dir, daily)
+    return last
+
+
 def mark_last_run_failed(reason: str, now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR) -> Optional[dict]:
     """The pipeline said SUCCESS but the release could not be read back from the public site, so nothing went live: say so."""
     runs = load_runs(runs_dir)
@@ -121,18 +143,18 @@ def _compact(r: dict) -> dict:
     return {"runId": r.get("runId"), "startedAt": r.get("startedAt"), "finishedAt": r.get("finishedAt"), "status": r.get("status"),
             "trigger": r.get("trigger"), "requests": r.get("requests"), "marketDates": r.get("marketDates"),
             "expectedLatestTradeDate": r.get("expectedLatestTradeDate"), "scheduledSlot": r.get("scheduledSlot"), "publication": pub.get("result"), "release": pub.get("release"),
-            "failureReason": r.get("failureReason")}
+            "failureReason": r.get("failureReason"), "daily": pub.get("daily")}
 
 
 def summarize(runs: list[dict]) -> dict:
     """lastSuccess / lastFailure / consecutiveFailures over the retained records (newest last)."""
-    last_success = next((r for r in reversed(runs) if r.get("status") == "SUCCESS"), None)
-    last_failure = next((r for r in reversed(runs) if r.get("status") in PROBLEM), None)
+    last_success = next((r for r in reversed(runs) if is_success(r.get("status"))), None)
+    last_failure = next((r for r in reversed(runs) if is_problem(r.get("status"))), None)
     consecutive = 0
     for r in reversed(runs):
-        if r.get("status") in PROBLEM:
+        if is_problem(r.get("status")):
             consecutive += 1
-        elif r.get("status") in ("SUCCESS",):
+        elif is_success(r.get("status")):
             break
         # NOOP / WAITING / SKIPPED neither reset nor extend the streak
     return {
@@ -164,8 +186,10 @@ def weekly_block(runs: list[dict], now_iso: str, out_dir: Path) -> dict:
     return block
 
 
-def write_health(now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR) -> dict:
+def write_health(now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR, daily: Optional[dict] = None) -> dict:
     runs = load_runs(runs_dir)
-    health = {"schemaVersion": 2, "updatedAt": now_iso, "retained": MAX_RUN_RECORDS, **summarize(runs), "weekly": weekly_block(runs, now_iso, out_dir)}
+    # `daily` (Phase 3I.2) replaces the weekly block: a daily manifest must not carry weekly-policy facts
+    health = {"schemaVersion": 3 if daily else 2, "updatedAt": now_iso, "retained": MAX_RUN_RECORDS, **summarize(runs),
+              **({"daily": daily, "weekly": None} if daily else {"weekly": weekly_block(runs, now_iso, out_dir)})}
     write_atomic(Path(out_dir) / "health.json", json.dumps(health, ensure_ascii=False, indent=1, sort_keys=True))
     return health

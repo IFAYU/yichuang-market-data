@@ -1,0 +1,5 @@
+{
+ "schema": 1,
+ "_doc": "Explicit, maintainer-confirmed unscheduled market closures (typhoon, special closure). Each entry: date (YYYY-MM-DD), markets (TWSE / TPEX / EMERGING, or [\"ALL\"]), reason, source (where it was announced or confirmed), addedAt. Nothing is hard-coded here and an empty list means: no confirmed closure (the calendar still says UNKNOWN where it cannot know).",
+ "closures": []
+}

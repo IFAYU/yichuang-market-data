@@ -41,6 +41,39 @@ def cmd_run(args) -> int:
     return _print_run(run_once(trigger=args.trigger, closures=_closures(args), allow_mixed_dates=args.allow_mixed_dates, allow_republish=args.republish))
 
 
+def cmd_run_daily(args) -> int:
+    """Phase 3I.2: the DAILY, trading-day-aware run (TWSE / TPEx). Exits non-zero only on a FAILED_* state; WAITING / NOOP / NO_TRADING_DAY are normal."""
+    from .daily_runner import fetch_holiday_rows, run_daily
+    rows = json.loads(Path(args.calendar).read_text(encoding="utf-8-sig")) if args.calendar else fetch_holiday_rows()
+    rec = run_daily(trigger=args.trigger, calendar_rows=rows, allow_republish=args.republish, force_markets=tuple(args.force_market or ()),
+                    **({"manual_closures_path": Path(args.manual_closures)} if args.manual_closures else {}))
+    print(json.dumps({"state": rec.status, "runId": rec.runId, "partition": rec.partition, "requests": rec.requests, "failureReason": rec.failureReason,
+                      "release": (rec.publication or {}).get("release"), "daily": (rec.publication or {}).get("daily")}, ensure_ascii=False, indent=1))
+    return 1 if str(rec.status).startswith("FAILED") else 0
+
+
+def cmd_push_paths(args) -> int:
+    """Stage ONLY the given paths on the data branch checkout and push them fast-forward only; reconcile only a remote move that is disjoint from --guard."""
+    from .gitpublish import PublishRace, publish_paths
+    try:
+        out = publish_paths(Path(args.repo), args.branch, args.path, args.message, args.guard)
+    except PublishRace as e:
+        print(json.dumps({"status": "REFUSED", "reason": str(e)}, ensure_ascii=False))
+        return 7
+    print(json.dumps({"status": "PUSHED" if out["pushed"] else "NOTHING_TO_PUSH", **out}, ensure_ascii=False))
+    return 0
+
+
+def cmd_mark_verified(args) -> int:
+    from .daily_runner import daily_health_block
+    from .runlog import load_runs, mark_last_run_verified
+    from .snapshot.build import read_manifest
+    manifest = read_manifest(OUT_DIR)
+    last = mark_last_run_verified(args.release, now_taipei().isoformat(timespec="seconds"), daily=daily_health_block(load_runs(RUNS_DIR), manifest, now_taipei()))
+    print(json.dumps({"status": "MARKED" if last else "NO_RUN", "runId": (last or {}).get("runId")}, ensure_ascii=False))
+    return 0
+
+
 def cmd_build(args) -> int:
     """Rebuild + republish from a raw partition already on disk (no network). Same gate as `run`."""
     from .runner import publish_existing
@@ -105,6 +138,20 @@ def main(argv=None) -> int:
     r.add_argument("--closure", nargs="*", default=None, help="extra market closure dates YYYY-MM-DD (holidays are not modelled otherwise)")
     r.add_argument("--allow-mixed-dates", action="store_true", help="explicit, recorded exception: publish although the two exchanges are on different dates")
     r.add_argument("--republish", action="store_true", help="explicit, recorded exception: publish although the market date did not move past the published one")
+    rd = sub.add_parser("run-daily", help="DAILY trading-day-aware run (Phase 3I.2): precheck -> fetch only the markets that owe a date -> per-market targets -> gate -> atomic release")
+    rd.add_argument("--trigger", choices=["manual", "schedule"], default="manual")
+    rd.add_argument("--calendar", default=None, help="official holidaySchedule JSON file (default: fetched from the TWSE OpenAPI)")
+    rd.add_argument("--manual-closures", default=None, help="explicit closures file (default: config/manual_closures.json)")
+    rd.add_argument("--republish", action="store_true", help="explicit, recorded exception: publish although no market is newer than the published release")
+    rd.add_argument("--force-market", nargs="*", default=None, choices=["TWSE", "TPEX"], help="manual dispatch: also query these markets (still judged against their own target)")
+    pp = sub.add_parser("push-paths", help="stage ONLY explicit paths on the data branch and push fast-forward only (no force), verifying the remote head")
+    pp.add_argument("--repo", required=True)
+    pp.add_argument("--branch", default="data")
+    pp.add_argument("--path", action="append", required=True)
+    pp.add_argument("--guard", action="append", required=True, help="namespace this publisher owns; a remote change inside it blocks a rebase")
+    pp.add_argument("--message", required=True)
+    mv = sub.add_parser("mark-verified", help="record that the public site served the release with the manifest's sha256")
+    mv.add_argument("--release", required=True)
     b = sub.add_parser("build", help="rebuild + republish from a raw partition on disk (no network), through the same gate")
     b.add_argument("--date", default=None, help="raw partition, e.g. 2026-10-06 or 2026-10-06.2")
     b.add_argument("--closure", nargs="*", default=None)
@@ -125,7 +172,7 @@ def main(argv=None) -> int:
     mf = sub.add_parser("mark-failed", help="rewrite the last run record as FAILED (release not readable from the public site)")
     mf.add_argument("--reason", required=True)
     args = ap.parse_args(argv)
-    return {"fetch": cmd_fetch, "run": cmd_run, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
+    return {"fetch": cmd_fetch, "run": cmd_run, "run-daily": cmd_run_daily, "push-paths": cmd_push_paths, "mark-verified": cmd_mark_verified, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
             "verify-remote": cmd_verify_remote, "mark-failed": cmd_mark_failed}[args.cmd](args)
 
 
