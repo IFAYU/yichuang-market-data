@@ -40,7 +40,11 @@ def fresh_dir() -> Path:
 @unittest.skipUnless(HAVE_OUT, "needs a published snapshot in out/")
 class GateTests(unittest.TestCase):
     def setUp(self):
-        self.market, self.industry, self.manifest = real_docs()  # a real snapshot whose exchanges are on different dates
+        self.market, self.industry, self.manifest = real_docs()
+        # The structure and statistics are the REAL published snapshot's, but the market dates are pinned: these tests describe the mixed-date rule (TWSE one day behind
+        # TPEx), so they must not depend on which dates happen to be published today (the daily policy publishes mixed dates on purpose, the weekly one the same day).
+        self.market = copy.deepcopy(self.market)
+        self.market["marketAsOf"] = {"TWSE": "2026-10-05", "TPEX": "2026-10-06"}
 
     def names(self, g):
         return {c["name"]: c for c in g.checks}
