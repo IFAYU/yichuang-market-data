@@ -94,7 +94,7 @@ def restore_from_health(out_dir: Path = OUT_DIR, runs_dir: Path = RUNS_DIR) -> i
     return n
 
 
-def mark_last_run_verified(release: str, now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR, daily: Optional[dict] = None) -> Optional[dict]:
+def mark_last_run_verified(release: str, now_iso: str, runs_dir: Path = RUNS_DIR, out_dir: Path = OUT_DIR, daily=None) -> Optional[dict]:
     """The public site served the release with the manifest's sha256: say so in the run record (Phase 3I.2 observability: publicVerification)."""
     runs = load_runs(runs_dir)
     last = next((r for r in reversed(runs) if (r.get("publication") or {}).get("release") == release), None)
@@ -102,7 +102,8 @@ def mark_last_run_verified(release: str, now_iso: str, runs_dir: Path = RUNS_DIR
         return None
     last.setdefault("publication", {}).setdefault("daily", {})["publicVerification"] = "VERIFIED_PUBLIC_READBACK"
     write_atomic(Path(runs_dir) / f"{last['runId']}.json", json.dumps(last, ensure_ascii=False, indent=1))
-    write_health(now_iso, runs_dir, out_dir, daily)
+    # `daily` may be a callable: the health block must be built from the run records AS THEY ARE AFTER this update (otherwise it reports the old verification state)
+    write_health(now_iso, runs_dir, out_dir, daily() if callable(daily) else daily)
     return last
 
 

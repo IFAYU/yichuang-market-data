@@ -69,7 +69,7 @@ def cmd_mark_verified(args) -> int:
     from .runlog import load_runs, mark_last_run_verified
     from .snapshot.build import read_manifest
     manifest = read_manifest(OUT_DIR)
-    last = mark_last_run_verified(args.release, now_taipei().isoformat(timespec="seconds"), daily=daily_health_block(load_runs(RUNS_DIR), manifest, now_taipei()))
+    last = mark_last_run_verified(args.release, now_taipei().isoformat(timespec="seconds"), daily=lambda: daily_health_block(load_runs(RUNS_DIR), manifest, now_taipei()))
     print(json.dumps({"status": "MARKED" if last else "NO_RUN", "runId": (last or {}).get("runId")}, ensure_ascii=False))
     return 0
 

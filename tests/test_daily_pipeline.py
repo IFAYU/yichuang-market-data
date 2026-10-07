@@ -154,6 +154,11 @@ class Daily(unittest.TestCase):
         rel = self.manifest()["release"]
         last = mark_last_run_verified(rel, "2026-10-08T06:35:00+08:00", self.runs, self.out)
         self.assertEqual(last["publication"]["daily"]["publicVerification"], "VERIFIED_PUBLIC_READBACK")
+        # ... and the published health.json says the same (the block is built AFTER the record was updated, not before)
+        from mitw.daily_runner import daily_health_block
+        mark_last_run_verified(rel, "2026-10-08T06:36:00+08:00", self.runs, self.out, daily=lambda: daily_health_block(__import__("mitw.runlog", fromlist=["load_runs"]).load_runs(self.runs), self.manifest(), datetime.fromisoformat("2026-10-08T06:36:00+08:00")))
+        health = json.loads((self.out / "health.json").read_text(encoding="utf-8"))
+        self.assertEqual(health["daily"]["lastDecision"]["publicVerification"], "VERIFIED_PUBLIC_READBACK")
 
     # ---- migration: a WEEKLY Last Known Good --------------------------------------------------------------------------------------------------------
     def test_a_weekly_last_known_good_is_accepted_and_both_markets_are_read_once(self):
