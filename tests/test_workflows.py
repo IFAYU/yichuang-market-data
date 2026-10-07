@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 W = Path(__file__).resolve().parent.parent / ".github" / "workflows"
-WEEKLY_SHA256 = "931e383f6249be3231a0833fe495c187307039d3c2cef447fa9bb9bbf44c1ce1"  # weekly-publish.yml as of Phase 3I.1 (schedule 02:00 / 06:00 / 12:00 UTC on Sundays)
+WEEKLY_SHA256 = "dcb1041151617b1fd7f4eae2bef77d4bc1af89ce657e811fff6f3adf18ef30a3"  # weekly-publish.yml with LF line endings (the form git stores and GitHub checks out; a Windows working copy has CRLF)
 NEW = ("weekday-market-publish.yml", "weekday-emerging-publish.yml")
 
 
@@ -29,7 +29,9 @@ class Workflows(unittest.TestCase):
             self.assertEqual(keys, ["workflow_dispatch"], n)
 
     def test_the_legacy_weekly_workflow_is_unchanged_and_still_scheduled(self):
-        raw = (W / "weekly-publish.yml").read_bytes()
+        raw = (W / "weekly-publish.yml").read_bytes().replace(b"
+", b"
+")   # line endings are not content
         self.assertEqual(hashlib.sha256(raw).hexdigest(), WEEKLY_SHA256)
         self.assertIn(b'cron: "0 2 * * 0"', raw)
 
