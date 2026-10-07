@@ -1,0 +1,25 @@
+{
+ "companyCount": 362,
+ "files": {
+  "emerging-snapshot.json": {
+   "bytes": 206268,
+   "path": "releases/7ee99d61545e/emerging-snapshot.json",
+   "sha256": "7ee99d61545e5cc3bd0870fb4384a413278934981c28e41291a2215053ec07f7"
+  }
+ },
+ "financialAsOf": {
+  "bvpsPeriod": "2026Q2",
+  "epsPeriod": "2026Q2"
+ },
+ "generatedAt": "2026-10-07T22:05:00+08:00",
+ "kind": "emerging-manifest",
+ "lastSuccessfulPublication": "2026-10-07T22:05:00+08:00",
+ "marketAsOf": {
+  "EMERGING": "2026-10-07"
+ },
+ "publishedAt": "2026-10-07T22:05:00+08:00",
+ "release": "7ee99d61545e",
+ "schemaVersion": "1.0.0",
+ "sourceHash": "7ee99d61545e5cc3bd0870fb4384a413278934981c28e41291a2215053ec07f7",
+ "updatePolicy": "WEEKLY"
+}
