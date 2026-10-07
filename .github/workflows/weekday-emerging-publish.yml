@@ -1,0 +1,78 @@
+name: weekday-emerging-data
+
+# Phase 3I.2: MANUAL ONLY. There is deliberately NO `schedule:` (and no cron) in this file. 興櫃 publication is its own failure domain: it only ever
+# writes under emerging/ and never touches /manifest.json, /health.json or /releases/ of the TWSE / TPEx publication. weekly-publish.yml is untouched.
+on:
+  workflow_dispatch:
+    inputs:
+      trigger:
+        description: "manual runs are never the 'final attempt' (a failure is only declared by the 23:00 scheduled attempt later)"
+        type: choice
+        options: ["manual"]
+        default: "manual"
+
+concurrency:
+  group: market-data-emerging
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PAGES_URL: https://ifayu.github.io/yichuang-market-data
+  TZ: Asia/Taipei
+
+jobs:
+  publish-emerging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: out
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -t .
+
+      - name: Official trading calendar (TWSE OpenAPI holidaySchedule)
+        run: curl -fsS --retry 2 https://openapi.twse.com.tw/v1/holidaySchedule/holidaySchedule -o calendar.json
+
+      # precheck (zero requests when nothing is owed) -> the five official TPEx datasets + the market aggregate -> snapshot-level market date from
+      # tpex_esb_highlight.Date (never from one company's fallback price) -> decision -> release + manifest written under out/emerging/ ONLY when publishing.
+      - name: Decide and build
+        id: build
+        shell: bash
+        run: |
+          set +e
+          python scripts/build_emerging_snapshot.py --daily --fetch --api api --out out --calendar calendar.json \
+            --current-manifest out/emerging/manifest.json --trigger manual | tee decision.json
+          echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.loads(open("decision.json").read().strip().splitlines()[-1])
+          print("### 興櫃 daily:", d["decision"])
+          print(d.get("reason") or "")
+          PY
+
+      - name: Publish (release first, verify, manifest last)
+        shell: bash
+        run: |
+          set -uo pipefail
+          GUARD="--guard emerging/"
+          if [ -n "$(git -C out status --porcelain -- emerging/manifest.json)" ]; then
+            REL=$(python -c "import json;print(json.load(open('out/emerging/manifest.json'))['release'])")
+            git -C out config user.name "github-actions[bot]"
+            git -C out config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            python -m mitw.cli push-paths --repo out --branch data --path emerging/releases $GUARD --message "emerging release $REL (immutable; not live until emerging/manifest.json points at it)" || exit 7
+            if ! python scripts/verify_emerging_public.py --base "$PAGES_URL" --manifest out/emerging/manifest.json; then
+              echo "release not readable from the public site: emerging/manifest.json is NOT updated (Last Known Good stays)"
+              exit 1
+            fi
+            python -m mitw.cli push-paths --repo out --branch data --path emerging/manifest.json $GUARD --message "publish emerging $REL" || exit 7
+          fi
+          case "$(python -c "import json;print(json.loads(open('decision.json').read().strip().splitlines()[-1])['decision'])")" in FAILED_*) exit 1;; esac

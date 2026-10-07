@@ -1,0 +1,118 @@
+name: weekday-market-data
+
+# Phase 3I.2: MANUAL ONLY. There is deliberately NO `schedule:` (and no cron) in this file: it is run by hand (workflow_dispatch) until the
+# schedule cut-over is approved in a later phase. The legacy weekly workflow (weekly-publish.yml) is untouched and stays the active scheduled fallback.
+# TWSE / TPEx publication under the DAILY_TRADING_DAY policy. 興櫃 has its own workflow and its own failure domain.
+on:
+  workflow_dispatch:
+    inputs:
+      force_market:
+        description: "Also query this market even if the Last Known Good already meets its target (it is still judged against its OWN target date)."
+        type: choice
+        options: ["none", "TWSE", "TPEX", "both"]
+        default: "none"
+      republish:
+        description: "EXPLICIT EXCEPTION: publish although no market is newer than the published release (recorded in the manifest gate)."
+        type: boolean
+        default: false
+
+# A separate group from the 興櫃 workflow: neither can queue behind, replace or cancel the other. Data-branch safety does NOT rely on this:
+# `mitw.cli push-paths` itself fetches, stages explicit paths only, reconciles a DISJOINT remote move, fails closed on an overlapping one,
+# never forces, and verifies the remote head after pushing.
+concurrency:
+  group: market-data-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PAGES_URL: https://ifayu.github.io/yichuang-market-data
+  TZ: Asia/Taipei
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout pipeline (main)
+        uses: actions/checkout@v4
+
+      - name: Checkout the published data (branch `data` = what GitHub Pages serves) into out/
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: out
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Tests
+        run: python -m unittest discover -s tests -t .
+
+      # Best-effort cache of the raw partitions: a market that owes nothing is CARRIED from the partition its Last Known Good was built from (no request).
+      # A cache miss only costs requests (that market is fetched instead); it can never make a number wrong.
+      - name: Restore the raw cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/raw
+          key: market-raw-${{ github.run_id }}
+          restore-keys: market-raw-
+
+      - name: Run the daily pipeline (precheck -> owed markets only -> per-market targets -> gate -> atomic release)
+        id: run
+        shell: bash
+        run: |
+          set +e
+          FORCE=""
+          case "${{ inputs.force_market }}" in TWSE) FORCE="--force-market TWSE";; TPEX) FORCE="--force-market TPEX";; both) FORCE="--force-market TWSE TPEX";; esac
+          python -m mitw.cli run-daily --trigger manual ${{ inputs.republish && '--republish' || '' }} $FORCE | tee decision.json
+          echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.load(open("decision.json"))
+          print("### TWSE / TPEx daily:", d["state"])
+          print(d.get("failureReason") or "")
+          PY
+
+      - name: Save the raw cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/raw
+          key: market-raw-${{ github.run_id }}
+
+      # Order is the contract: immutable release first -> public read-back of every file -> (health: publicVerification) -> manifest.json LAST.
+      # Any failure before the manifest push leaves the live manifest, and therefore what every visitor sees, exactly as it was.
+      - name: Publish (release first, manifest last)
+        shell: bash
+        run: |
+          set -uo pipefail
+          RC="${{ steps.run.outputs.rc }}"
+          GUARD="--guard manifest.json --guard health.json --guard releases/"
+          cd out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain -- manifest.json)" ]; then
+            REL=$(python -c "import json;print(json.load(open('manifest.json'))['release'])")
+            echo "new release $REL"
+            cd ..
+            python -m mitw.cli push-paths --repo out --branch data --path releases $GUARD --message "release $REL (immutable; not live until manifest.json points at it)" || exit 7
+            if python -m mitw.cli verify-remote --base "$PAGES_URL" --release "$REL" --timeout 900; then
+              python -m mitw.cli mark-verified --release "$REL"
+              python -m mitw.cli push-paths --repo out --branch data --path manifest.json --path health.json $GUARD --message "publish $REL" || exit 7
+            else
+              (cd out && git checkout HEAD -- manifest.json)
+              python -m mitw.cli mark-failed --reason "release $REL could not be read back from the public site; manifest.json was NOT updated"
+              python -m mitw.cli push-paths --repo out --branch data --path health.json $GUARD --message "health: release $REL not readable, manifest unchanged" || true
+              RC=1
+            fi
+          else
+            cd ..
+            python -m mitw.cli push-paths --repo out --branch data --path health.json $GUARD --message "health: run record" || true
+          fi
+          exit "${RC:-0}"
