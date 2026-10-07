@@ -29,9 +29,7 @@ class Workflows(unittest.TestCase):
             self.assertEqual(keys, ["workflow_dispatch"], n)
 
     def test_the_legacy_weekly_workflow_is_unchanged_and_still_scheduled(self):
-        raw = (W / "weekly-publish.yml").read_bytes().replace(b"
-", b"
-")   # line endings are not content
+        raw = (W / "weekly-publish.yml").read_bytes().replace(bytes([13, 10]), bytes([10]))   # line endings are not content
         self.assertEqual(hashlib.sha256(raw).hexdigest(), WEEKLY_SHA256)
         self.assertIn(b'cron: "0 2 * * 0"', raw)
 
