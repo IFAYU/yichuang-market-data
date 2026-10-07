@@ -230,8 +230,9 @@ def run_daily(a) -> int:
     base = {"market": "EMERGING", "businessTimeTaipei": now.isoformat(timespec="seconds"), "attemptType": D.attempt_label(now), "final": final, "trigger": a.trigger,
             "previousPublishedMarketDate": cur and (cur.get("marketAsOf") or {}).get("EMERGING"), "lastKnownGood": cur and cur.get("release"),
             "availabilityBasis": av.basis, "evidenceLevel": D.EVIDENCE_LEVEL, "manifestUpdated": False, "lastKnownGoodPreserved": True, "publicVerification": "NOT_APPLICABLE"}
+    republish = bool(getattr(a, "republish", False))
     pre = D.precheck(now, published, cal, D.EMERGING_MARKETS)
-    if not pre.fetch:
+    if not pre.fetch and not republish:
         print(json.dumps({**base, "decision": pre.state, "state": pre.state, "requests": 0, "reason": pre.reason, "expectedMarketDate": pre.targets.get("EMERGING"),
                           "actualSourceMarketDate": None, "releaseId": base["lastKnownGood"]}, ensure_ascii=False))
         return 0
@@ -253,6 +254,9 @@ def run_daily(a) -> int:
         return failed("ERROR", f"{type(e).__name__}: {e}")
     obs = {"EMERGING": D.Obs("OK", D.parse_market_date(doc["marketAsOf"]["EMERGING"]))}
     dec = D.evaluate(now, published, obs, cal, D.EMERGING_MARKETS, final)
+    if republish and dec.state == D.NOOP_ALREADY_PUBLISHED and obs["EMERGING"].date is not None and dec.targets.get("EMERGING") and obs["EMERGING"].date.isoformat() >= dec.targets["EMERGING"]:
+        # EXPLICIT, recorded exception (policy migration): publish the SAME market date under the daily policy. Never a way around a source that did not move forward.
+        dec = D.Decision(D.SUCCESS, True, ("EMERGING",), (), (), dec.targets, "REPUBLISH_SAME_MARKET_DATE: policy migration (explicit), market date unchanged")
     c = doc["counts"]
     out = {**base, "decision": dec.state, "state": dec.state, "publish": dec.publish, "reason": dec.reason, "expectedMarketDate": dec.targets.get("EMERGING"),
            "actualSourceMarketDate": doc["marketAsOf"]["EMERGING"], "marketDate": doc["marketAsOf"]["EMERGING"], "releaseId": base["lastKnownGood"],
@@ -283,6 +287,7 @@ def main() -> None:
     ap.add_argument("--current-manifest", help="the published emerging/manifest.json = the Last Known Good (daily mode)")
     ap.add_argument("--now", help="override the clock (tests)")
     ap.add_argument("--trigger", default="schedule", choices=["schedule", "manual"])
+    ap.add_argument("--republish", action="store_true", help="explicit, recorded exception: publish the SAME market date again (e.g. the WEEKLY -> DAILY manifest policy migration)")
     a = ap.parse_args()
     if a.daily:
         if not a.calendar:

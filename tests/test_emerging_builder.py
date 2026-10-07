@@ -199,6 +199,33 @@ class DailyObservabilityAndRetention(unittest.TestCase):
         self.assertIn(out["release"], left)
         self.assertEqual(out["pruned"], ["oldoldoldold"])
 
+    def test_an_explicit_republish_migrates_the_manifest_policy_but_never_overrides_a_source_that_did_not_move(self):
+        import io
+        from contextlib import redirect_stdout
+        t = Path(tempfile.mkdtemp(prefix="mitw_rp_"))
+        write_api(t / "api", [q("1000", "1151008"), q("1001", "1151008")], highlight_date="1151008") if (t / "api").mkdir() is None else None
+        (t / "cur.json").write_text(json.dumps({"release": "aaaaaaaaaaaa", "sourceHash": "a" * 64, "updatePolicy": "WEEKLY", "marketAsOf": {"EMERGING": "2026-10-08"}}), encoding="utf-8")
+        def go(republish, now="2026-10-08T22:10:00+08:00"):
+            args = type("A", (), dict(api=str(t / "api"), out=str(t / "out"), fetch=False, calendar=str(CAL), current_manifest=str(t / "cur.json"), now=now, trigger="manual", republish=republish))
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                code = B.run_daily(args)
+            return code, json.loads(buf.getvalue().strip().splitlines()[-1])
+        code, out = go(False)
+        self.assertEqual((out["decision"], out["manifestUpdated"]), ("NOOP_ALREADY_PUBLISHED", False))   # without the exception nothing is written
+        code, out = go(True)
+        self.assertEqual((code, out["decision"], out["manifestUpdated"]), (0, "SUCCESS", True))
+        m = json.loads((t / "out" / "emerging" / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual((m["updatePolicy"], m["marketAsOf"]["EMERGING"]), ("DAILY_TRADING_DAY", "2026-10-08"))
+        (t / "api" / "tpex_esb_highlight.json").write_text(json.dumps([{"Date": "1151007", "RegisteredStocksNumber": "2"}]), encoding="utf-8")   # a source that is BEHIND its target: republish must not paper over it
+        for f in ("tpex_esb_latest_statistics",):
+            rows = json.loads((t / "api" / f"{f}.json").read_text(encoding="utf-8"))
+            for r in rows:
+                r["Date"] = "1151007"
+            (t / "api" / f"{f}.json").write_text(json.dumps(rows), encoding="utf-8")
+        code, out = go(True)
+        self.assertEqual((out["decision"], out["manifestUpdated"]), ("FAILED_VALIDATION", False))   # moved backward
+
     def test_R_an_unchanged_emerging_market_writes_nothing_at_all(self):
         code, out, t = self.run_daily_out("2026-10-08T22:10:00+08:00", [q("1000")], {**self.LKG, "marketAsOf": {"EMERGING": "2026-10-08"}})
         self.assertEqual((out["decision"], out["requests"], out["manifestUpdated"]), ("NOOP_ALREADY_PUBLISHED", 0, False))

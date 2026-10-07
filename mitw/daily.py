@@ -291,6 +291,8 @@ def evaluate(now: datetime, published: dict, observed: dict, cal: TradingCalenda
             return Decision(NOOP_ALREADY_PUBLISHED, False, (), (), carried, targets, "no market owes anything")
         if cal_unknown and not behind:
             return Decision(FAILED_NO_NEW if final else WAITING, False, (), (), carried, targets, "CALENDAR_UNKNOWN: no market moved and a holiday cannot be proven")
+        if not behind:  # read although it owed nothing (a manual force, a carry fallback) and nothing moved: there is simply nothing new
+            return Decision(NOOP_ALREADY_PUBLISHED, False, (), (), carried, targets, "no market moved and none owes a newer date")
         why = "NO_NEW_MARKET_DATA: " + ", ".join(f"{m} still {observed[m].date} (owes {targets[m]})" for m in behind)
         return Decision(FAILED_NO_NEW if final else WAITING, False, (), behind, carried, targets, why)
     if not behind:

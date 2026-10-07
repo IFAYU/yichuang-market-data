@@ -275,6 +275,13 @@ class DecisionMatrix(unittest.TestCase):
         st, dec, _ = self.attempt("2026-10-07T23:10", pub, obs)
         self.assertEqual((st, dec.publish, dec.advanced, dec.behind), (D.SUCCESS_PARTIAL, True, ("TPEX",), ("TWSE",)))   # PARTIAL = a market that owed something did not reach its target
 
+    def test_a_market_read_without_owing_anything_and_not_moving_is_a_no_op_not_a_wait(self):
+        # e.g. a manual 'force market' run, or a carry fallback: the source shows the date the Last Known Good already has, and that date meets the target
+        pub = {"TWSE": d("2026-10-07"), "TPEX": d("2026-10-08")}
+        dec = D.evaluate(at("2026-10-08T22:30"), pub, {"TWSE": ok("2026-10-07")}, CAL, MAIN, False)
+        self.assertEqual((dec.state, dec.publish, dec.behind), (D.NOOP_ALREADY_PUBLISHED, False, ()))
+        self.assertEqual(D.evaluate(at("2026-10-08T23:30"), pub, {"TWSE": ok("2026-10-07")}, CAL, MAIN, True).state, D.NOOP_ALREADY_PUBLISHED)   # even on the final attempt: not a failure
+
     def test_different_target_dates_are_never_a_partial(self):
         st, dec, _ = self.attempt("2026-10-08T22:30", {"TWSE": "2026-10-07", "TPEX": "2026-10-07"}, {"TPEX": ok("2026-10-08")})
         self.assertEqual(st, D.SUCCESS)
