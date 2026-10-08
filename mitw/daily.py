@@ -34,7 +34,7 @@ EMERGING_MARKETS = ("EMERGING",)
 
 # GitHub Actions cron is UTC; Taiwan has no DST (UTC+8). NOT ACTIVATED by anything in this phase (the workflows are workflow_dispatch only).
 CRON_UTC = ("0 13 * * 1-5", "0 14 * * 1-5", "0 15 * * 1-5")   # 21:00 / 22:00 / 23:00 Taipei, the same weekday
-MORNING_CRON_UTC = "30 22 * * 0-4"                            # 06:30 Taipei Mon-Fri = 22:30 UTC the evening before (Sun-Thu)
+MORNING_CRON_UTC = "30 22 * * 0-5"                            # 06:30 Taipei Mon-SAT = 22:30 UTC the evening before (Sun-Fri). Saturday is required: Friday's TWSE data is owed from Sat 06:30
 
 FRESH, STALE, SEVERELY_STALE, UNKNOWN = "FRESH", "STALE", "SEVERELY_STALE", "UNKNOWN"
 

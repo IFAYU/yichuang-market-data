@@ -135,6 +135,32 @@ class Daily(unittest.TestCase):
         self.run_at("2026-10-08T23:00:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-08"})
         self.assertEqual((self.out / "health.json").read_bytes(), health)
 
+    def test_saturday_morning_pays_fridays_twse_data_and_never_repeats(self):
+        # Friday 22:00: TWSE has Thursday, TPEx has Friday (first publication)
+        self.run_at("2026-10-16T22:00:00", {"TWSE": "2026-10-15", "TPEX": "2026-10-16"})
+        before = self.manifest()["release"]
+        # Saturday 06:30 is not a trading day, but TWSE still owes Friday: a TWSE-only atomic release, TPEx carried
+        r = self.run_at("2026-10-17T06:30:00", {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+        self.assertEqual((r.status, self.calls[-1][1]), (D.SUCCESS, ("TWSE",)))
+        m = self.manifest()
+        self.assertNotEqual(m["release"], before)
+        self.assertEqual(m["marketAsOf"], {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+        # a second Saturday attempt, and the following Monday 06:30: nothing owed -> no request, no new release
+        n_calls, rel = len(self.calls), m["release"]
+        for when, state in (("2026-10-17T06:40:00", D.NO_TRADING_DAY), ("2026-10-19T06:30:00", D.NOOP_ALREADY_PUBLISHED)):
+            r = self.run_at(when, {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+            self.assertEqual((r.status, r.requests), (state, 0), when)
+        self.assertEqual((len(self.calls), self.manifest()["release"]), (n_calls, rel))
+
+    def test_a_closed_day_morning_is_not_reported_as_a_fault_when_the_debt_is_paid(self):
+        self.run_at("2026-10-08T22:00:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-08"})
+        self.run_at("2026-10-09T06:30:00", {"TWSE": "2026-10-08", "TPEX": "2026-10-08"})   # holiday: pays Thursday
+        n = len(self.calls)
+        r = self.run_at("2026-10-09T06:45:00", {"TWSE": "2026-10-08", "TPEX": "2026-10-08"})
+        self.assertIn(r.status, (D.NO_TRADING_DAY, D.NOOP_ALREADY_PUBLISHED))
+        self.assertFalse(str(r.status).startswith("FAILED"))
+        self.assertEqual(len(self.calls), n)
+
     def test_observability_fields_are_recorded(self):
         self.run_at("2026-10-08T06:30:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-07"})
         r = self.run_at("2026-10-08T22:00:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-08"})
@@ -206,6 +232,28 @@ class CarryOver(unittest.TestCase):
         self.assertEqual((carried.meta.reusedFrom, carried.meta.fetchedAt[:10]), ("2026-10-06", "2026-10-06"))   # original fetch time, honest lineage
         self.assertEqual(carried.path.read_bytes(), s.get("2026-10-06", "TWSE", "prices").path.read_bytes())
         self.assertEqual(s.get(part, "TPEX", "prices").meta.fetchedAt[:10], "2026-10-08")
+
+    def test_isolated_dry_run_tpex_update_with_twse_carry_builds_identical_twse_companies(self):
+        """PRODUCTION_CARRY_FORWARD_NOT_YET_OBSERVED for this direction (TPEx new, TWSE carried): real ingest + real load/build on an isolated raw store."""
+        store, root = build_store()
+        raw = root / "raw"
+        before = build(load_inputs(store, "2026-10-06"), "t")
+
+        def fake_fetch(ep, st, ctx):                       # the "new" TPEx files: same bytes, later fetch time (isolates the carry, not the exchange)
+            old = st.get("2026-10-06", ep.market, ep.dataset)
+            body = old.path.read_bytes() if old else b"[]"      # a dataset the fixture never had stays empty, as before
+            ctx.request_count += 1
+            meta = RawMeta(ep.id, ep.url, ctx.run_date, "2026-10-08T22:00:00+08:00", 200, None, None, sha256_hex(body), len(body), 1, ctx.run_id)
+            return st.write(meta, body, ep.market, ep.dataset)
+
+        res, fallbacks = ingest_markets("2026-10-08", raw, new_run("2026-10-08"), ("TPEX",), {"TWSE": "2026-10-06"}, fake_fetch)
+        self.assertEqual(fallbacks, ())
+        after = build(load_inputs(RawStore(raw), "2026-10-08"), "t")
+        def twse(snap):
+            return sorted(json.dumps(c.to_dict() if hasattr(c, "to_dict") else c, sort_keys=True, default=str) for c in snap.companies
+                          if (c["market"] if isinstance(c, dict) else c.market) == "TWSE")
+        self.assertEqual(twse(before), twse(after))                       # carried market: same companies, same numbers, same count
+        self.assertEqual(before.market_as_of["TWSE"], after.market_as_of["TWSE"])
 
     def test_a_missing_carry_partition_is_a_fallback_fetch_never_a_guess(self):
         store, root = build_store()

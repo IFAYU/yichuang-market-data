@@ -92,7 +92,7 @@ class ManualClosureTests(unittest.TestCase):
 class ScheduleTests(unittest.TestCase):
     def test_utc_cron_is_exact_and_not_activated(self):
         self.assertEqual(D.CRON_UTC, ("0 13 * * 1-5", "0 14 * * 1-5", "0 15 * * 1-5"))
-        self.assertEqual(D.MORNING_CRON_UTC, "30 22 * * 0-4")  # 06:30 Taipei Mon-Fri = 22:30 UTC the evening before
+        self.assertEqual(D.MORNING_CRON_UTC, "30 22 * * 0-5")  # 06:30 Taipei Mon-Sat = 22:30 UTC the evening before (Sat: Friday's TWSE data)
 
     def test_attempt_labels_and_final(self):
         self.assertEqual([D.attempt_label(at(f"2026-10-07T{t}")) for t in ("06:30", "07:45", "21:00", "21:20", "22:00", "22:59", "23:00", "23:40")],
@@ -326,6 +326,43 @@ class PublishedMetadata(unittest.TestCase):
         self.assertEqual(p["markets"]["TWSE"]["basis"], "EMPIRICALLY_OBSERVED")
         self.assertIn("2026-10-09", p["calendar"]["closedDates"])
         self.assertEqual(json.loads(json.dumps(p)), p)
+
+
+
+class CronCoverage(unittest.TestCase):
+    """Phase 3I.2C: the DESIGNED cron expressions must hit every moment the policy says work is owed (they are NOT activated in this phase)."""
+
+    @staticmethod
+    def _hits(expr: str, utc: datetime) -> bool:
+        minute, hour, _dom, _mon, dow = expr.split()
+        def field(f, v, lo, hi):
+            out = set()
+            for part in f.split(","):
+                a, _, b = part.partition("-")
+                out |= set(range(int(a), int(b or a) + 1)) if part != "*" else set(range(lo, hi + 1))
+            return v in out
+        cron_dow = (utc.weekday() + 1) % 7  # cron: Sunday=0
+        return field(minute, utc.minute, 0, 59) and field(hour, utc.hour, 0, 23) and field(dow, cron_dow, 0, 6)
+
+    def test_every_trade_day_has_a_tpex_evening_slot_and_a_twse_next_morning_slot_including_saturday(self):
+        from datetime import timedelta, timezone
+        tw = timezone(timedelta(hours=8))
+        monday = datetime(2026, 10, 12, tzinfo=tw)   # an ordinary week
+        for i in range(5):
+            day = monday + timedelta(days=i)
+            for expr, hhmm in zip(D.CRON_UTC, ("21:00", "22:00", "23:00")):
+                h, m = map(int, hhmm.split(":"))
+                self.assertTrue(self._hits(expr, day.replace(hour=h, minute=m).astimezone(timezone.utc)), (day.date(), hhmm))
+            nxt = (day + timedelta(days=1)).replace(hour=6, minute=30).astimezone(timezone.utc)
+            self.assertTrue(self._hits(D.MORNING_CRON_UTC, nxt), f"TWSE data of {day.date()} is owed at {nxt} UTC and no cron hits it")
+        sat = datetime(2026, 10, 17, 6, 30, tzinfo=tw).astimezone(timezone.utc)   # Friday's data on Saturday morning: the case a Mon-Fri 06:30 cron misses
+        self.assertTrue(self._hits(D.MORNING_CRON_UTC, sat))
+        self.assertFalse(self._hits(D.MORNING_CRON_UTC, datetime(2026, 10, 18, 6, 30, tzinfo=tw).astimezone(timezone.utc)))   # Sunday morning: nothing owed
+
+    def test_a_mon_fri_morning_cron_would_have_missed_saturday(self):
+        from datetime import timezone, timedelta
+        sat = datetime(2026, 10, 17, 6, 30, tzinfo=timezone(timedelta(hours=8))).astimezone(timezone.utc)
+        self.assertFalse(self._hits("30 22 * * 0-4", sat))
 
 
 if __name__ == "__main__":
