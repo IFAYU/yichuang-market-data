@@ -51,6 +51,16 @@ class Workflows(unittest.TestCase):
         self.assertLess(e.index("--path emerging/releases"), e.index("verify_emerging_public.py"))
         self.assertLess(e.index("verify_emerging_public.py"), e.index("--path emerging/manifest.json"))
 
+    def test_the_two_publishers_have_disjoint_data_branch_namespaces_so_emerging_can_never_break_the_main_release(self):
+        e = (W / "weekday-emerging-publish.yml").read_text(encoding="utf-8")
+        m = (W / "weekday-market-publish.yml").read_text(encoding="utf-8")
+        e_paths = re.findall(r"--path (\S+)", e)
+        m_paths = re.findall(r"--path (\S+)", m)
+        self.assertTrue(e_paths and all(p.startswith("emerging/") for p in e_paths), e_paths)       # emerging writes only under emerging/
+        self.assertEqual([g.strip('"') for g in re.findall(r"--guard (\S+)", e)], ["emerging/"])
+        self.assertFalse(any(p.startswith("emerging") for p in m_paths), m_paths)                    # the main publisher never writes emerging files
+        self.assertTrue({"releases", "manifest.json", "health.json"} >= set(m_paths), m_paths)       # and only its own three paths
+
     def test_syntax_when_a_yaml_parser_is_available(self):
         try:
             import yaml
