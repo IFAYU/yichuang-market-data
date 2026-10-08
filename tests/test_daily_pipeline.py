@@ -161,6 +161,34 @@ class Daily(unittest.TestCase):
         self.assertFalse(str(r.status).startswith("FAILED"))
         self.assertEqual(len(self.calls), n)
 
+    def test_saturday_retries_wait_without_failing_then_pay_once_and_ask_nothing_when_paid(self):
+        self.run_at("2026-10-16T22:00:00", {"TWSE": "2026-10-15", "TPEX": "2026-10-16"})
+        old = self.manifest()["release"]
+        # 06:30 and 07:30: Friday's TWSE file is not out yet -> WAITING (only TWSE asked, never a failure, manifest untouched)
+        for when in ("2026-10-17T06:30:00", "2026-10-17T07:30:00"):
+            before = (self.out / "manifest.json").read_bytes()
+            r = self.run_at(when, {"TWSE": "2026-10-15", "TPEX": "2026-10-16"})
+            self.assertEqual((r.status, self.calls[-1][1]), (D.WAITING, ("TWSE",)), when)
+            self.assertEqual((self.out / "manifest.json").read_bytes(), before)
+        # 08:30: it arrived -> exactly one TWSE-only release
+        r = self.run_at("2026-10-17T08:30:00", {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+        self.assertEqual((r.status, self.calls[-1][1]), (D.SUCCESS, ("TWSE",)))
+        rel = self.manifest()["release"]
+        self.assertNotEqual(rel, old)
+        # a late duplicate of the 08:30 slot: zero requests, no new release
+        n = len(self.calls)
+        r = self.run_at("2026-10-17T08:45:00", {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+        self.assertEqual((r.status, r.requests, len(self.calls), self.manifest()["release"]), (D.NO_TRADING_DAY, 0, n, rel))
+
+    def test_when_0630_already_paid_the_saturday_retries_make_no_official_request(self):
+        self.run_at("2026-10-16T22:00:00", {"TWSE": "2026-10-15", "TPEX": "2026-10-16"})
+        self.run_at("2026-10-17T06:30:00", {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+        n = len(self.calls)
+        for when in ("2026-10-17T07:30:00", "2026-10-17T08:30:00"):
+            r = self.run_at(when, {"TWSE": "2026-10-16", "TPEX": "2026-10-16"})
+            self.assertEqual(r.requests, 0, when)
+        self.assertEqual(len(self.calls), n)
+
     def test_observability_fields_are_recorded(self):
         self.run_at("2026-10-08T06:30:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-07"})
         r = self.run_at("2026-10-08T22:00:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-08"})

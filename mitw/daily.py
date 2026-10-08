@@ -35,6 +35,10 @@ EMERGING_MARKETS = ("EMERGING",)
 # GitHub Actions cron is UTC; Taiwan has no DST (UTC+8). NOT ACTIVATED by anything in this phase (the workflows are workflow_dispatch only).
 CRON_UTC = ("0 13 * * 1-5", "0 14 * * 1-5", "0 15 * * 1-5")   # 21:00 / 22:00 / 23:00 Taipei, the same weekday
 MORNING_CRON_UTC = "30 22 * * 0-5"                            # 06:30 Taipei Mon-SAT = 22:30 UTC the evening before (Sun-Fri). Saturday is required: Friday's TWSE data is owed from Sat 06:30
+# Saturday is the only morning without an evening before it that could catch up (no weekend evening runs): Friday's TWSE data is owed from 06:30 and the next
+# ordinary slot would be Monday. Two extra TWSE-only retries: 07:30 and 08:30 Taipei = Fri 23:30 UTC and Sat 00:30 UTC. They cost nothing when the debt is paid
+# (precheck -> NO_TRADING_DAY / NOOP with zero requests) and never touch TPEx or 興櫃 (separate workflow, nothing owed on a Saturday morning). NOT ACTIVATED.
+SATURDAY_RETRY_CRON_UTC = ("30 23 * * 5", "30 0 * * 6")
 
 FRESH, STALE, SEVERELY_STALE, UNKNOWN = "FRESH", "STALE", "SEVERELY_STALE", "UNKNOWN"
 

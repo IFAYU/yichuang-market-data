@@ -359,6 +359,18 @@ class CronCoverage(unittest.TestCase):
         self.assertTrue(self._hits(D.MORNING_CRON_UTC, sat))
         self.assertFalse(self._hits(D.MORNING_CRON_UTC, datetime(2026, 10, 18, 6, 30, tzinfo=tw).astimezone(timezone.utc)))   # Sunday morning: nothing owed
 
+    def test_saturday_has_two_extra_twse_retries_at_0730_and_0830_and_no_other_day_gets_them(self):
+        from datetime import timedelta, timezone
+        tw = timezone(timedelta(hours=8))
+        hit = lambda dt: any(self._hits(e, dt.astimezone(timezone.utc)) for e in D.SATURDAY_RETRY_CRON_UTC)
+        for h, m in ((7, 30), (8, 30)):
+            self.assertTrue(hit(datetime(2026, 10, 17, h, m, tzinfo=tw)), (h, m))
+        for day in (12, 13, 14, 15, 16, 18):   # Mon-Fri and Sunday
+            for h, m in ((7, 30), (8, 30)):
+                self.assertFalse(hit(datetime(2026, 10, day, h, m, tzinfo=tw)), (day, h, m))
+        self.assertEqual(D.attempt_label(datetime(2026, 10, 17, 8, 30, tzinfo=tw)), "MORNING_TWSE")
+        self.assertFalse(D.is_final_attempt(datetime(2026, 10, 17, 8, 30, tzinfo=tw)))   # a morning retry never declares the day failed
+
     def test_a_mon_fri_morning_cron_would_have_missed_saturday(self):
         from datetime import timezone, timedelta
         sat = datetime(2026, 10, 17, 6, 30, tzinfo=timezone(timedelta(hours=8))).astimezone(timezone.utc)
