@@ -74,6 +74,16 @@ def cmd_mark_verified(args) -> int:
     return 0
 
 
+def cmd_reconcile_health(args) -> int:
+    """Upgrade a stuck PENDING_PUBLIC_READBACK only after re-reading the live release from the public site. Touches health.json only."""
+    from .reconcile import reconcile_files
+    from .remote import verify_release
+    out = Path(args.out)
+    outcome = reconcile_files(out, lambda rel: verify_release(args.base, out, rel, timeout_s=args.timeout), now_taipei().isoformat(timespec="seconds"))
+    print(json.dumps({"status": outcome}, ensure_ascii=False))
+    return 0
+
+
 def cmd_build(args) -> int:
     """Rebuild + republish from a raw partition already on disk (no network). Same gate as `run`."""
     from .runner import publish_existing
@@ -152,6 +162,10 @@ def main(argv=None) -> int:
     pp.add_argument("--message", required=True)
     mv = sub.add_parser("mark-verified", help="record that the public site served the release with the manifest's sha256")
     mv.add_argument("--release", required=True)
+    rh = sub.add_parser("reconcile-health", help="re-check a PENDING_PUBLIC_READBACK record against the public site (health.json only; never touches releases or the manifest)")
+    rh.add_argument("--base", required=True)
+    rh.add_argument("--out", default=str(OUT_DIR))
+    rh.add_argument("--timeout", type=int, default=120)
     b = sub.add_parser("build", help="rebuild + republish from a raw partition on disk (no network), through the same gate")
     b.add_argument("--date", default=None, help="raw partition, e.g. 2026-10-06 or 2026-10-06.2")
     b.add_argument("--closure", nargs="*", default=None)
@@ -172,7 +186,7 @@ def main(argv=None) -> int:
     mf = sub.add_parser("mark-failed", help="rewrite the last run record as FAILED (release not readable from the public site)")
     mf.add_argument("--reason", required=True)
     args = ap.parse_args(argv)
-    return {"fetch": cmd_fetch, "run": cmd_run, "run-daily": cmd_run_daily, "push-paths": cmd_push_paths, "mark-verified": cmd_mark_verified, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
+    return {"fetch": cmd_fetch, "run": cmd_run, "run-daily": cmd_run_daily, "push-paths": cmd_push_paths, "mark-verified": cmd_mark_verified, "reconcile-health": cmd_reconcile_health, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
             "verify-remote": cmd_verify_remote, "mark-failed": cmd_mark_failed}[args.cmd](args)
 
 

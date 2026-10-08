@@ -113,6 +113,8 @@ jobs:
             fi
           else
             cd ..
+            # Nothing new to publish: close any PENDING_PUBLIC_READBACK the live release still carries (health.json only; a failure here never touches the live release)
+            python -m mitw.cli reconcile-health --base "$PAGES_URL" || true
             python -m mitw.cli push-paths --repo out --branch data --path health.json $GUARD --message "health: run record" || true
           fi
           exit "${RC:-0}"
