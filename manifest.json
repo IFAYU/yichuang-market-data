@@ -2,12 +2,12 @@
  "companyCount": 1988,
  "decision": {
   "advanced": [
-   "TWSE"
+   "TPEX"
   ],
-  "attempt": "MORNING_TWSE",
+  "attempt": "PRIMARY",
   "behind": [],
   "carried": [
-   "TPEX"
+   "TWSE"
   ],
   "fallbacks": [],
   "reason": "every owed market reached its own target date",
@@ -16,14 +16,14 @@
  },
  "files": {
   "industry-snapshots.json": {
-   "bytes": 461660,
-   "path": "releases/ae443e7fce16/industry-snapshots.json",
-   "sha256": "b1f8130ddaedbca618bfa93b6da4c3325a1afbcea00582d48ea0d4ef038cc0c7"
+   "bytes": 461238,
+   "path": "releases/084bdd5a23ab/industry-snapshots.json",
+   "sha256": "30bc02769b9d1b889e0a750c6aed54e1c352a34c147c656decf739d89c5455e3"
   },
   "market-snapshot.json": {
-   "bytes": 3703238,
-   "path": "releases/ae443e7fce16/market-snapshot.json",
-   "sha256": "1560d95c026fe6f4697e8e75dab8a2b4c580cb0761875cd6604f15fb4483b095"
+   "bytes": 3703639,
+   "path": "releases/084bdd5a23ab/market-snapshot.json",
+   "sha256": "69fd1e4f9e8bdce91d0c13ace4fbbb5a9e42164f048667136d2fc0f4a94c456e"
   }
  },
  "financialAsOf": {
@@ -61,17 +61,17 @@
     "ok": true
    },
    {
-    "detail": "marketAsOf={'TWSE': '2026-10-07', 'TPEX': '2026-10-07'}",
+    "detail": "marketAsOf={'TWSE': '2026-10-07', 'TPEX': '2026-10-08'}",
     "name": "market-date-present",
     "ok": true
    },
    {
-    "detail": "no market moves backwards (latest {'TPEX': '2026-10-07', 'TWSE': '2026-10-06'})",
+    "detail": "no market moves backwards (latest {'TPEX': '2026-10-07', 'TWSE': '2026-10-07'})",
     "name": "not-older-than-latest",
     "ok": true
    },
    {
-    "detail": "newer: ['TWSE']",
+    "detail": "newer: ['TPEX']",
     "name": "a-market-advances",
     "ok": true
    },
@@ -89,37 +89,37 @@
   "exceptions": [],
   "passed": true
  },
- "generatedAt": "2026-10-08T08:31:08+08:00",
- "lastSuccessfulPublication": "2026-10-08T08:31:08+08:00",
+ "generatedAt": "2026-10-08T21:05:33+08:00",
+ "lastSuccessfulPublication": "2026-10-08T21:05:33+08:00",
  "marketAsOf": {
-  "TPEX": "2026-10-07",
+  "TPEX": "2026-10-08",
   "TWSE": "2026-10-07"
  },
  "markets": {
   "TPEX": {
    "aheadOfTarget": false,
    "availabilityBasis": "EMPIRICALLY_OBSERVED",
-   "carried": true,
+   "carried": false,
    "evidenceLevel": "EMPIRICALLY_OBSERVED",
    "expectedBy": "21:00",
-   "expectedMarketDate": "2026-10-07",
-   "marketDate": "2026-10-07",
+   "expectedMarketDate": "2026-10-08",
+   "marketDate": "2026-10-08",
    "offsetDays": 0,
    "previousPublishedMarketDate": "2026-10-07",
-   "rawPartition": "2026-10-08.2",
+   "rawPartition": "2026-10-08.3",
    "targetReached": true
   },
   "TWSE": {
    "aheadOfTarget": false,
    "availabilityBasis": "EMPIRICALLY_OBSERVED",
-   "carried": false,
+   "carried": true,
    "evidenceLevel": "EMPIRICALLY_OBSERVED",
    "expectedBy": "06:30",
    "expectedMarketDate": "2026-10-07",
    "marketDate": "2026-10-07",
    "offsetDays": 1,
-   "previousPublishedMarketDate": "2026-10-06",
-   "rawPartition": "2026-10-08.2",
+   "previousPublishedMarketDate": "2026-10-07",
+   "rawPartition": "2026-10-08.3",
    "targetReached": true
   }
  },
@@ -153,7 +153,7 @@
    "coveredFrom": "2026-01-01",
    "coveredTo": "2026-12-31",
    "extraClosures": [],
-   "fetchedAt": "2026-10-08T08:31:08+08:00",
+   "fetchedAt": "2026-10-08T21:05:33+08:00",
    "manualClosures": [],
    "source": "TWSE_OPENAPI_holidaySchedule"
   },
@@ -186,12 +186,12 @@
   "timezone": "Asia/Taipei",
   "windowClosesAt": "24:00"
  },
- "publishedAt": "2026-10-08T08:31:08+08:00",
- "release": "ae443e7fce16",
- "runDate": "2026-10-08.2",
+ "publishedAt": "2026-10-08T21:05:33+08:00",
+ "release": "084bdd5a23ab",
+ "runDate": "2026-10-08.3",
  "schemaVersion": "1.4.0",
- "sourceFetchedAt": "2026-10-08T08:31:12+08:00",
- "sourceHash": "ae443e7fce16650ef8bf20a8ece1e5d68ac980a015d226fd23c30a4e5abac430",
+ "sourceFetchedAt": "2026-10-08T21:05:45+08:00",
+ "sourceHash": "084bdd5a23ab188beaf3b01a9ae0e78188583c7248a9b7fd03627c00849e70a9",
  "timezone": "Asia/Taipei",
  "updatePolicy": "DAILY_TRADING_DAY"
 }
