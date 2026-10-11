@@ -1,6 +1,23 @@
 {
- "consecutiveFailures": 0,
- "lastFailure": null,
+ "consecutiveFailures": 1,
+ "lastFailure": {
+  "daily": null,
+  "expectedLatestTradeDate": "2026-10-09",
+  "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+  "finishedAt": "2026-10-12T01:20:06+08:00",
+  "marketDates": {
+   "TPEX": "2026-10-08",
+   "TWSE": "2026-10-08"
+  },
+  "publication": "NO_NEW_MARKET_DATA",
+  "release": null,
+  "requests": 20,
+  "runId": "20261012T011912",
+  "scheduledSlot": "2026-10-11T10:00:00+08:00",
+  "startedAt": "2026-10-12T01:19:12+08:00",
+  "status": "FAILED",
+  "trigger": "schedule"
+ },
  "lastSuccess": {
   "daily": null,
   "expectedLatestTradeDate": "2026-10-08",
@@ -182,18 +199,12 @@
    "startedAt": "2026-10-11T20:05:49+08:00",
    "status": "WAITING",
    "trigger": "schedule"
-  }
- ],
- "schemaVersion": 2,
- "updatedAt": "2026-10-11T20:06:45+08:00",
- "weekly": {
-  "freshnessWhenWritten": "UNKNOWN",
-  "lastFailureReason": null,
-  "lastScheduledRun": {
+  },
+  {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-09",
-   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'})",
-   "finishedAt": "2026-10-11T20:06:45+08:00",
+   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+   "finishedAt": "2026-10-12T01:20:06+08:00",
    "marketDates": {
     "TPEX": "2026-10-08",
     "TWSE": "2026-10-08"
@@ -201,10 +212,34 @@
    "publication": "NO_NEW_MARKET_DATA",
    "release": null,
    "requests": 20,
-   "runId": "20261011T200549",
+   "runId": "20261012T011912",
    "scheduledSlot": "2026-10-11T10:00:00+08:00",
-   "startedAt": "2026-10-11T20:05:49+08:00",
-   "status": "WAITING",
+   "startedAt": "2026-10-12T01:19:12+08:00",
+   "status": "FAILED",
+   "trigger": "schedule"
+  }
+ ],
+ "schemaVersion": 2,
+ "updatedAt": "2026-10-12T01:20:06+08:00",
+ "weekly": {
+  "freshnessWhenWritten": "UNKNOWN",
+  "lastFailureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+  "lastScheduledRun": {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-10-09",
+   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+   "finishedAt": "2026-10-12T01:20:06+08:00",
+   "marketDates": {
+    "TPEX": "2026-10-08",
+    "TWSE": "2026-10-08"
+   },
+   "publication": "NO_NEW_MARKET_DATA",
+   "release": null,
+   "requests": 20,
+   "runId": "20261012T011912",
+   "scheduledSlot": "2026-10-11T10:00:00+08:00",
+   "startedAt": "2026-10-12T01:19:12+08:00",
+   "status": "FAILED",
    "trigger": "schedule"
   },
   "lastSuccessfulPublication": "2026-10-09T06:35:23+08:00",
