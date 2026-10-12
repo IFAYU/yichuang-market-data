@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Optional
 
 from .config import MAX_RUN_RECORDS, OUT_DIR, RUNS_DIR
+from .publish_state import outcome_of_status
 
 # SUCCESS  a new release was published and became latest
 # NOOP     this week's scheduled publication already succeeded: zero requests
@@ -54,6 +55,8 @@ class RunRecord:
     scheduledSlot: Optional[str] = None  # the weekly slot (Sunday 10:00 Asia/Taipei) this run belongs to
     publication: dict = field(default_factory=lambda: {"result": None, "release": None, "gate": None})
     failureReason: Optional[str] = None
+    publishStatus: Optional[str] = None      # Phase 8B: PUBLISHED | NO_UPDATE | FAILED | PENDING (mitw.publish_state)
+    publishReasonCode: Optional[str] = None
 
     def to_json(self) -> dict:
         return self.__dict__
@@ -144,7 +147,9 @@ def _compact(r: dict) -> dict:
     return {"runId": r.get("runId"), "startedAt": r.get("startedAt"), "finishedAt": r.get("finishedAt"), "status": r.get("status"),
             "trigger": r.get("trigger"), "requests": r.get("requests"), "marketDates": r.get("marketDates"),
             "expectedLatestTradeDate": r.get("expectedLatestTradeDate"), "scheduledSlot": r.get("scheduledSlot"), "publication": pub.get("result"), "release": pub.get("release"),
-            "failureReason": r.get("failureReason"), "daily": pub.get("daily")}
+            "failureReason": r.get("failureReason"), "daily": pub.get("daily"),
+            "publishStatus": r.get("publishStatus") or outcome_of_status(r.get("status")).status,
+            "publishReasonCode": r.get("publishReasonCode") or outcome_of_status(r.get("status")).reason_code}
 
 
 def summarize(runs: list[dict]) -> dict:
@@ -162,6 +167,7 @@ def summarize(runs: list[dict]) -> dict:
         "lastSuccess": _compact(last_success) if last_success else None,
         "lastFailure": _compact(last_failure) if last_failure else None,
         "consecutiveFailures": consecutive,
+        "latestOutcome": _compact(runs[-1]) and {k: _compact(runs[-1])[k] for k in ("runId", "startedAt", "status", "publishStatus", "publishReasonCode")} if runs else None,
         "runs": [_compact(r) for r in runs[-MAX_RUN_RECORDS:]],
     }
 

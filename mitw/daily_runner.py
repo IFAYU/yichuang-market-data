@@ -20,6 +20,7 @@ from .daily_ingest import failures_by_market, ingest_markets, prune_raw
 from .ingest import next_partition, partition_market_dates
 from .pipeline import build, load_inputs
 from .providers.http import fetch_endpoint, new_run, now_taipei
+from .publish_state import outcome_of_status
 from .raw.store import RawStore
 from .runlog import RunRecord, load_runs, record, restore_from_health, write_health
 from .snapshot.build import PublishRefused, read_manifest
@@ -190,6 +191,10 @@ def partition_of(previous: Optional[dict], market: str) -> Optional[str]:
 
 def _finish(rec: RunRecord, started: datetime, runs_dir: Path, out_dir: Path, previous: Optional[dict], write_health_file: bool, raw_dir: Optional[Path] = None) -> RunRecord:
     rec.finishedAt = _iso(now_taipei())
+    o = outcome_of_status(rec.status)
+    if rec.publication.get("result") == "REFUSED":
+        o = outcome_of_status("REFUSED")
+    rec.publishStatus, rec.publishReasonCode = o.status, o.reason_code
     if raw_dir is not None:
         named = {v for v in (partition_of(read_manifest(out_dir), m) for m in D.MAIN_MARKETS) if v}
         prune_raw(raw_dir, 4, named | {rec.partition})

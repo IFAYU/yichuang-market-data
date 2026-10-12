@@ -325,7 +325,7 @@ class RunnerTests(unittest.TestCase):
     def test_a_sunday_run_that_fetched_old_data_is_not_a_publication(self):
         """The schedule ran, the pipeline worked, but the market date did not move: that is NO_NEW_MARKET_DATA, never FRESH."""
         out, runs, _ = self.dirs()
-        self.manifest(out, "2026-10-06", "2026-10-06", published="2026-10-04T10:12:00")
+        self.manifest(out, "2026-10-05", "2026-10-06", published="2026-10-04T10:12:00")  # exactly what the raw partition carries: the date did not move
         before = (out / "manifest.json").read_bytes()
         early = publish_partition("2026-10-06", RunRecord(runId="e", startedAt="x"), datetime(2026, 10, 11, 10, 5), RAW_DIR, out, db_path=None,
                                   allow_mixed_dates=True, final_attempt=False)

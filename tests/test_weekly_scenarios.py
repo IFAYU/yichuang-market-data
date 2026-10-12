@@ -100,6 +100,55 @@ class WeeklyCycle(unittest.TestCase):
         monday = self.freshness("2026-10-19T09:00:00")
         self.assertEqual((monday["status"], monday["missedWeeklyUpdates"]), ("STALE", 1))  # ... and Monday says so
 
+    # ---- Phase 8B: WHY the date did not move decides the word ------------------------------------------------------------------------
+    HOLIDAY_CAL = {"source": "TWSE_OPENAPI_holidaySchedule", "fetchedAt": "2026-10-09T06:35:23+08:00", "coveredFrom": "2026-01-01", "coveredTo": "2026-12-31",
+                   "closedDates": ["2026-10-09", "2026-10-26"], "extraClosures": [], "manualClosures": []}
+
+    def seed(self, with_calendar=True):
+        """The real 2026-10-09 situation: the last release carries Thursday 10-08, Friday 10-09 was a holiday, then the Sunday runs."""
+        m = {"release": "1c8fb7b95638", "marketAsOf": {"TWSE": "2026-10-08", "TPEX": "2026-10-08"}, "updatePolicy": "WEEKLY",
+             "lastSuccessfulPublication": "2026-10-09T06:35:23", "publishedAt": "2026-10-09T06:35:23"}
+        if with_calendar:
+            m["publicationPolicy"] = {"calendar": self.HOLIDAY_CAL}
+        (self.out / "manifest.json").write_text(json.dumps(m), encoding="utf-8")
+        return (self.out / "manifest.json").read_bytes()
+
+    def test_a_holiday_week_is_no_update_on_every_attempt_never_failed(self):
+        before = self.seed()
+        stale = {"TWSE": "2026-10-08", "TPEX": "2026-10-08"}
+        runs = [self.run_at(w, stale) for w in ("2026-10-11T16:20:00", "2026-10-11T20:05:00", "2026-10-12T01:19:00")]
+        for r in runs:
+            self.assertEqual((r.status, r.publishStatus, r.publishReasonCode, r.failureReason), ("NOOP", "NO_UPDATE", "NO_NEW_TRADING_DAY", None))
+            self.assertEqual(r.publication["result"], "NO_NEW_TRADING_DAY")
+        self.assertEqual(runs[0].expectedLatestTradeDate, "2026-10-08")  # Friday 10-09 is a closed day, so Thursday is the latest owed
+        self.assertEqual((self.out / "manifest.json").read_bytes(), before)  # no new release, the Last Known Good is untouched
+        health = json.loads((self.out / "health.json").read_text(encoding="utf-8"))
+        self.assertEqual(health["consecutiveFailures"], 0)
+        self.assertEqual(health["latestOutcome"]["publishStatus"], "NO_UPDATE")
+
+    def test_without_a_calendar_the_same_week_is_not_silently_normal(self):
+        self.seed(with_calendar=False)
+        stale = {"TWSE": "2026-10-08", "TPEX": "2026-10-08"}
+        a, b, c = (self.run_at(w, stale) for w in ("2026-10-11T10:05:00", "2026-10-11T14:05:00", "2026-10-11T20:05:00"))
+        self.assertEqual([x.status for x in (a, b, c)], ["WAITING", "WAITING", "FAILED"])
+        self.assertIn("CALENDAR_UNKNOWN", c.failureReason)
+
+    def test_an_owed_trading_day_missing_at_the_source_is_failed(self):
+        before = self.seed()
+        old = {"TWSE": "2026-10-08", "TPEX": "2026-10-08"}
+        a = self.run_at("2026-10-18T10:05:00", old)  # Friday 10-16 was a trading day and the exchanges still serve 10-08
+        self.assertEqual((a.status, a.publishStatus), ("WAITING", "PENDING"))
+        self.run_at("2026-10-18T14:05:00", old)
+        c = self.run_at("2026-10-18T20:05:00", old)
+        self.assertEqual((c.status, c.publishStatus, c.publishReasonCode), ("FAILED", "FAILED", "EXPECTED_TRADING_DAY_MISSING"))
+        self.assertEqual((self.out / "manifest.json").read_bytes(), before)
+
+    def test_a_source_date_that_goes_backwards_is_failed_at_once(self):
+        before = self.seed()
+        r = self.run_at("2026-10-11T10:05:00", {"TWSE": "2026-10-07", "TPEX": "2026-10-07"})
+        self.assertEqual((r.status, r.publishStatus, r.publishReasonCode, r.publication["result"]), ("FAILED", "FAILED", "SOURCE_DATE_REGRESSED", "SOURCE_DATE_REGRESSED"))
+        self.assertEqual((self.out / "manifest.json").read_bytes(), before)
+
     # ---- 4. 10:00 failure, 14:00 recovery --------------------------------------------------------------------------------------------
     def test_a_failure_at_10_recovers_at_14(self):
         self.run_at("2026-10-11T10:05:00")
