@@ -1,5 +1,5 @@
 {
- "consecutiveFailures": 2,
+ "consecutiveFailures": 3,
  "daily": {
   "attempts": {
    "TPEX": [
@@ -29,7 +29,7 @@
   },
   "lastDecision": {
    "attemptType": "RETRY_1",
-   "businessTimeTaipei": "2026-10-14T22:00:27+08:00",
+   "businessTimeTaipei": "2026-10-14T22:02:54+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -98,7 +98,7 @@
  "lastFailure": {
   "daily": {
    "attemptType": "RETRY_1",
-   "businessTimeTaipei": "2026-10-14T22:00:27+08:00",
+   "businessTimeTaipei": "2026-10-14T22:02:54+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -158,7 +158,7 @@
   },
   "expectedLatestTradeDate": "2026-10-14",
   "failureReason": "TPEX: tpex.prices: network error: ChunkedEncodingError",
-  "finishedAt": "2026-10-14T22:01:50+08:00",
+  "finishedAt": "2026-10-14T22:03:19+08:00",
   "marketDates": {
    "TPEX": null,
    "TWSE": "2026-10-13"
@@ -166,9 +166,9 @@
   "publication": "FAILED_SOURCE",
   "release": null,
   "requests": 4,
-  "runId": "20261014T220027",
+  "runId": "20261014T220254",
   "scheduledSlot": null,
-  "startedAt": "2026-10-14T22:00:27+08:00",
+  "startedAt": "2026-10-14T22:02:54+08:00",
   "status": "FAILED_SOURCE",
   "trigger": "manual"
  },
@@ -391,9 +391,27 @@
    "trigger": "manual"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-10-14",
+   "failureReason": "TPEX: tpex.prices: network error: ChunkedEncodingError",
+   "finishedAt": "2026-10-14T22:01:50+08:00",
+   "marketDates": {
+    "TPEX": null,
+    "TWSE": "2026-10-13"
+   },
+   "publication": "FAILED_SOURCE",
+   "release": null,
+   "requests": 4,
+   "runId": "20261014T220027",
+   "scheduledSlot": null,
+   "startedAt": "2026-10-14T22:00:27+08:00",
+   "status": "FAILED_SOURCE",
+   "trigger": "manual"
+  },
+  {
    "daily": {
     "attemptType": "RETRY_1",
-    "businessTimeTaipei": "2026-10-14T22:00:27+08:00",
+    "businessTimeTaipei": "2026-10-14T22:02:54+08:00",
     "companyCount": null,
     "decision": "FAILED_SOURCE",
     "lastKnownGoodPreserved": true,
@@ -453,7 +471,7 @@
    },
    "expectedLatestTradeDate": "2026-10-14",
    "failureReason": "TPEX: tpex.prices: network error: ChunkedEncodingError",
-   "finishedAt": "2026-10-14T22:01:50+08:00",
+   "finishedAt": "2026-10-14T22:03:19+08:00",
    "marketDates": {
     "TPEX": null,
     "TWSE": "2026-10-13"
@@ -461,14 +479,14 @@
    "publication": "FAILED_SOURCE",
    "release": null,
    "requests": 4,
-   "runId": "20261014T220027",
+   "runId": "20261014T220254",
    "scheduledSlot": null,
-   "startedAt": "2026-10-14T22:00:27+08:00",
+   "startedAt": "2026-10-14T22:02:54+08:00",
    "status": "FAILED_SOURCE",
    "trigger": "manual"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-10-14T22:01:50+08:00",
+ "updatedAt": "2026-10-14T22:03:19+08:00",
  "weekly": null
 }
