@@ -1,9 +1,20 @@
 name: weekday-market-data
 
-# Phase 3I.2: MANUAL ONLY. There is deliberately NO `schedule:` (and no cron) in this file: it is run by hand (workflow_dispatch) until the
-# schedule cut-over is approved in a later phase. The legacy weekly workflow (weekly-publish.yml) is untouched and stays the active scheduled fallback.
-# TWSE / TPEx publication under the DAILY_TRADING_DAY policy. 興櫃 has its own workflow and its own failure domain.
+# Phase 3I.2 cut-over (approved 2026-10-14): this workflow now ALSO runs on a schedule (it was manual-only until then, and the daily data stopped refreshing on 2026-10-08).
+# Slots come from mitw/daily.py (GitHub cron is UTC; Taiwan has no DST, UTC+8):
+#   CRON_UTC                 21:00 / 22:00 / 23:00 Taipei, Mon-Fri   (TPEx primary / retry / final)
+#   MORNING_CRON_UTC         06:30 Taipei, Mon-Sat                   (TWSE)
+#   SATURDAY_RETRY_CRON_UTC  07:30 / 08:30 Taipei Saturday           (TWSE only; zero requests when nothing is owed)
+# Every run is idempotent: when nothing is owed the precheck returns NOOP with zero requests. The legacy weekly workflow (weekly-publish.yml) is untouched.
+# TWSE / TPEx publication under the DAILY_TRADING_DAY policy. 興櫃 has its own workflow and its own failure domain (still manual-only).
 on:
+  schedule:
+    - cron: "0 13 * * 1-5"
+    - cron: "0 14 * * 1-5"
+    - cron: "0 15 * * 1-5"
+    - cron: "30 22 * * 0-5"
+    - cron: "30 23 * * 5"
+    - cron: "30 0 * * 6"
   workflow_dispatch:
     inputs:
       force_market:
@@ -70,7 +81,7 @@ jobs:
           set +e
           FORCE=""
           case "${{ inputs.force_market }}" in TWSE) FORCE="--force-market TWSE";; TPEX) FORCE="--force-market TPEX";; both) FORCE="--force-market TWSE TPEX";; esac
-          python -m mitw.cli run-daily --trigger manual ${{ inputs.republish && '--republish' || '' }} $FORCE | tee decision.json
+          python -m mitw.cli run-daily --trigger ${{ github.event_name == 'schedule' && 'schedule' || 'manual' }} ${{ inputs.republish && '--republish' || '' }} $FORCE | tee decision.json
           echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
           python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json
