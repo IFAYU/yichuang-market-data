@@ -110,13 +110,16 @@ def build_history_doc(history: History, symbols: Iterable, generated_at: str, pr
     }
 
 
-def seed_from_months(history: History, symbols: Iterable, months: list, fetch_month: Callable[[str, str], Optional[dict]], sleep: Callable[[float], None] = time.sleep, gap_s: float = 3.0) -> dict:
+def seed_from_months(history: History, symbols: Iterable, months: list, fetch_month: Callable[[str, str], Optional[dict]], sleep: Callable[[float], None] = time.sleep, gap_s: float = 3.0,
+                     skip: Optional[Callable[[str, str], bool]] = None) -> dict:
     """ONE-TIME manual seeding. `fetch_month(symbol, 'YYYYMM')` returns the parsed JSON (or None on a refusal); a 403/429 style refusal must raise to stop the run.
     Returns {"requests": n, "added": n, "failed": [(symbol, ym), ...]}. Months already complete in `history` are still requested only for the current month."""
     requests = added = 0
     failed = []
     for s in symbols:
         for ym in months:
+            if skip is not None and skip(s, ym):
+                continue
             doc = fetch_month(s, ym)
             requests += 1
             if doc is None:

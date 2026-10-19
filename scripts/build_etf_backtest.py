@@ -78,7 +78,7 @@ def ma_deviation(closes):
 
     乖離 = 收盤 / N日均線 - 1（每個有 N 日資料的交易日都算一次）。
     dip = 乖離由低到高排序後最低 10% 的平均（至少 30 個觀測才算）。
-    估計買進價 = 現在的 N 日均線 x (1 + dip)，取到跳動單位。
+    估計買進價 = 現在的 N 日均線 x (1 + min(dip, 0))，取到跳動單位（最低 10% 的乖離若仍高於均線，買進價就停在均線價，dipCapped=true）。
     closes 必須是已還原分割的收盤序列（用 adjust_splits 的結果）。不排名、不建議用哪一個視窗。
     """
     out = []
@@ -104,9 +104,10 @@ def ma_deviation(closes):
             out.append(row)
             continue
         low = sorted(devs)[:max(1, int(len(devs) * MA_DIP_FRACTION))]
-        dip = sum(low) / len(low)
+        raw_dip = sum(low) / len(low)
+        dip = min(raw_dip, 0.0)  # 買進價最高不超過均線價：最低 10% 的乖離若仍在均線之上（長期上漲期間），視為 0
         buy = to_tick(ma * (1 + dip))
-        row.update({"status": "OK", "dipPercent": round(dip * 100, 2), "buyPrice": buy,
+        row.update({"status": "OK", "dipPercent": round(dip * 100, 2), "dipCapped": raw_dip > 0, "buyPrice": buy,
                     "moveToBuyPercent": round((buy / closes[-1] - 1) * 100, 2)})
         out.append(row)
     return out

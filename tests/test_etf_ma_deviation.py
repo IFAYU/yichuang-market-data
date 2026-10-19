@@ -42,6 +42,16 @@ def test_matches_independent_brute_force():
         assert r["buyPrice"] == m.to_tick(ma * (1 + dip)) and r["buyPrice"] < r["ma"]
 
 
+def test_a_dip_above_the_average_is_capped_so_the_buy_price_never_exceeds_the_ma():
+    rising = [50 + 0.2 * i for i in range(300)]  # a steady climb: even the lowest 10% deviations sit above the long average
+    for r in m.ma_deviation(rising):
+        assert r["status"] == "OK" and r["buyPrice"] <= r["ma"] + 0.05  # tick rounding only
+        if r["dipCapped"]:
+            assert r["dipPercent"] == 0.0 and r["buyPrice"] == m.to_tick(r["ma"])
+    assert any(r["dipCapped"] for r in m.ma_deviation(rising))
+    assert not any(r["dipCapped"] for r in m.ma_deviation([100.0] * 300))
+
+
 def test_tick_rounding_and_no_ranking_fields():
     assert m.to_tick(34.2749) == 34.27 and m.to_tick(112.93) == 112.95 and m.to_tick(112.92) == 112.9
     keys = {k for r in m.ma_deviation([80 + (i % 9) for i in range(300)]) for k in r}
@@ -64,6 +74,7 @@ class MaDeviationTests(unittest.TestCase):
     def test_flat(self): test_flat_history_every_window_ok_with_buy_price_equal_to_ma()
     def test_short(self): test_short_history_says_so_per_window_and_invents_no_number()
     def test_brute_force(self): test_matches_independent_brute_force()
+    def test_capped(self): test_a_dip_above_the_average_is_capped_so_the_buy_price_never_exceeds_the_ma()
     def test_tick_no_ranking(self): test_tick_rounding_and_no_ranking_fields()
     def test_analyze_split(self): test_analyze_carries_ma_deviation_on_split_adjusted_closes()
 

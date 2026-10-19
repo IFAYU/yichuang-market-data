@@ -64,6 +64,19 @@ class Runner(unittest.TestCase):
         self.assertIn("2026-10-13", h["0050"]); self.assertIn("2026-10-01", h["0050"])  # the published close and the seeded month side by side
         self.assertEqual(m["priceDate"], "2026-10-13")
 
+    def test_a_second_seeding_skips_past_months_already_on_file(self):
+        run_etf_publish(self.out, datetime.fromisoformat("2026-10-13T18:00:00+08:00"), self.fetcher("2026-10-13"), calendar_rows=HOLIDAYS)
+        calls = []
+        def fm(sym, ym):
+            calls.append((sym, ym))
+            roc = f"{int(ym[:4]) - 1911}/{ym[4:]}/"  # the month's own dates, like the real file
+            return {**MONTH, "data": [[roc + r[0][-2:], *r[1:]] for r in MONTH["data"]]}
+        run_history_seed(self.out, months=2, symbols=["0050"], today_iso="2026-10-14", fetch_month=fm, sleep=lambda s: None)
+        self.assertEqual(calls, [("0050", "202609"), ("0050", "202610")])
+        calls.clear()
+        run_history_seed(self.out, months=3, symbols=["0050"], today_iso="2026-10-14", fetch_month=fm, sleep=lambda s: None)
+        self.assertEqual(calls, [("0050", "202608"), ("0050", "202610")])  # 202609 is on file; the current month is refreshed; 202608 is new
+
     def test_seeding_needs_published_quotes_or_explicit_symbols(self):
         with self.assertRaises(SystemExit):
             run_history_seed(self.out, months=1, fetch_month=lambda s, y: None, sleep=lambda s: None)
