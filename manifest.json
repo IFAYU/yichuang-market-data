@@ -2,12 +2,12 @@
  "companyCount": 1989,
  "decision": {
   "advanced": [
-   "TWSE"
+   "TPEX"
   ],
   "attempt": "MORNING_TWSE",
   "behind": [],
   "carried": [
-   "TPEX"
+   "TWSE"
   ],
   "fallbacks": [],
   "reason": "every owed market reached its own target date",
@@ -16,14 +16,14 @@
  },
  "files": {
   "industry-snapshots.json": {
-   "bytes": 461576,
-   "path": "releases/76b70d109968/industry-snapshots.json",
-   "sha256": "40eec5d4cc9f640913470052765594711fff5c2152fdf9f0d15b363c9cda96f7"
+   "bytes": 461899,
+   "path": "releases/5392433db6e6/industry-snapshots.json",
+   "sha256": "3f8d9adcfe5b4e666c55407c7a26250826e73eee27e1114c6143cef8757a9145"
   },
   "market-snapshot.json": {
-   "bytes": 3705584,
-   "path": "releases/76b70d109968/market-snapshot.json",
-   "sha256": "6894c85bf1bb334ec10660a82e6fc378c091c7a30d3de8a5f187b16b51929b26"
+   "bytes": 3705323,
+   "path": "releases/5392433db6e6/market-snapshot.json",
+   "sha256": "63b31c49f4175eea697c28ec4cb28d5212b55bc7b83a305940ed63044fe94a5b"
   }
  },
  "financialAsOf": {
@@ -33,12 +33,12 @@
  },
  "freshnessAtPublish": {
   "TPEX": {
-   "expectedMarketDate": "2026-10-16",
+   "expectedMarketDate": "2026-10-19",
    "lagTradingDays": 0,
    "status": "FRESH"
   },
   "TWSE": {
-   "expectedMarketDate": "2026-10-15",
+   "expectedMarketDate": "2026-10-16",
    "lagTradingDays": 0,
    "status": "FRESH"
   }
@@ -61,17 +61,17 @@
     "ok": true
    },
    {
-    "detail": "marketAsOf={'TWSE': '2026-10-16', 'TPEX': '2026-10-16'}",
+    "detail": "marketAsOf={'TWSE': '2026-10-16', 'TPEX': '2026-10-19'}",
     "name": "market-date-present",
     "ok": true
    },
    {
-    "detail": "no market moves backwards (latest {'TPEX': '2026-10-16', 'TWSE': '2026-10-15'})",
+    "detail": "no market moves backwards (latest {'TPEX': '2026-10-16', 'TWSE': '2026-10-16'})",
     "name": "not-older-than-latest",
     "ok": true
    },
    {
-    "detail": "newer: ['TWSE']",
+    "detail": "newer: ['TPEX']",
     "name": "a-market-advances",
     "ok": true
    },
@@ -89,37 +89,37 @@
   "exceptions": [],
   "passed": true
  },
- "generatedAt": "2026-10-17T08:40:54+08:00",
- "lastSuccessfulPublication": "2026-10-17T08:40:54+08:00",
+ "generatedAt": "2026-10-20T03:13:04+08:00",
+ "lastSuccessfulPublication": "2026-10-20T03:13:04+08:00",
  "marketAsOf": {
-  "TPEX": "2026-10-16",
+  "TPEX": "2026-10-19",
   "TWSE": "2026-10-16"
  },
  "markets": {
   "TPEX": {
    "aheadOfTarget": false,
    "availabilityBasis": "EMPIRICALLY_OBSERVED",
-   "carried": true,
+   "carried": false,
    "evidenceLevel": "EMPIRICALLY_OBSERVED",
    "expectedBy": "21:00",
-   "expectedMarketDate": "2026-10-16",
-   "marketDate": "2026-10-16",
+   "expectedMarketDate": "2026-10-19",
+   "marketDate": "2026-10-19",
    "offsetDays": 0,
    "previousPublishedMarketDate": "2026-10-16",
-   "rawPartition": "2026-10-17.2",
+   "rawPartition": "2026-10-20",
    "targetReached": true
   },
   "TWSE": {
    "aheadOfTarget": false,
    "availabilityBasis": "EMPIRICALLY_OBSERVED",
-   "carried": false,
+   "carried": true,
    "evidenceLevel": "EMPIRICALLY_OBSERVED",
    "expectedBy": "06:30",
    "expectedMarketDate": "2026-10-16",
    "marketDate": "2026-10-16",
    "offsetDays": 1,
-   "previousPublishedMarketDate": "2026-10-15",
-   "rawPartition": "2026-10-17.2",
+   "previousPublishedMarketDate": "2026-10-16",
+   "rawPartition": "2026-10-20",
    "targetReached": true
   }
  },
@@ -153,7 +153,7 @@
    "coveredFrom": "2026-01-01",
    "coveredTo": "2026-12-31",
    "extraClosures": [],
-   "fetchedAt": "2026-10-17T08:40:54+08:00",
+   "fetchedAt": "2026-10-20T03:13:04+08:00",
    "manualClosures": [],
    "source": "TWSE_OPENAPI_holidaySchedule"
   },
@@ -186,12 +186,12 @@
   "timezone": "Asia/Taipei",
   "windowClosesAt": "24:00"
  },
- "publishedAt": "2026-10-17T08:40:54+08:00",
- "release": "76b70d109968",
- "runDate": "2026-10-17.2",
+ "publishedAt": "2026-10-20T03:13:04+08:00",
+ "release": "5392433db6e6",
+ "runDate": "2026-10-20",
  "schemaVersion": "1.4.0",
- "sourceFetchedAt": "2026-10-17T08:40:58+08:00",
- "sourceHash": "76b70d1099682c3be41018f6d9b6f3470ea1411f68449d1d376f13a31f51bd83",
+ "sourceFetchedAt": "2026-10-20T03:13:21+08:00",
+ "sourceHash": "5392433db6e600bbd62954dad312c960993196ceeb8cf359264c79e34ad95266",
  "timezone": "Asia/Taipei",
  "updatePolicy": "DAILY_TRADING_DAY"
 }
