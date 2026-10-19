@@ -11,6 +11,8 @@ from datetime import date, datetime, timezone
 
 SYMBOLS = ["0050", "0056", "00713", "00918", "00919"]
 LOOKBACK, FORWARD = 252, 120
+MA_WINDOWS = (20, 60, 120, 240)
+MA_MIN_OBS, MA_DIP_FRACTION = 30, 0.1
 
 
 def month_starts(n):
@@ -65,6 +67,51 @@ def adjust_splits(series):
     return closes, splits[::-1]
 
 
+def to_tick(p):
+    """台股跳動單位：50 元以下 0.01、50 元以上 0.05（四捨五入到最近的跳動單位）。"""
+    t = 0.01 if p < 50 else 0.05
+    return round(int(p / t + 0.5) * t, 2)
+
+
+def ma_deviation(closes):
+    """20/60/120/240 日均線的乖離與估計買進價（描述過去，非預測）。
+
+    乖離 = 收盤 / N日均線 - 1（每個有 N 日資料的交易日都算一次）。
+    dip = 乖離由低到高排序後最低 10% 的平均（至少 30 個觀測才算）。
+    估計買進價 = 現在的 N 日均線 x (1 + dip)，取到跳動單位。
+    closes 必須是已還原分割的收盤序列（用 adjust_splits 的結果）。不排名、不建議用哪一個視窗。
+    """
+    out = []
+    n_all = len(closes)
+    for n in MA_WINDOWS:
+        row = {"window": n, "available": n_all}
+        if n_all < n:
+            row["status"] = "NEED_MORE_HISTORY"
+            out.append(row)
+            continue
+        devs, run = [], 0.0
+        for i, c in enumerate(closes):
+            run += c
+            if i >= n:
+                run -= closes[i - n]
+            if i >= n - 1:
+                devs.append(c / (run / n) - 1)
+        ma = sum(closes[-n:]) / n
+        row.update({"ma": round(ma, 2), "deviationPercent": round((closes[-1] / ma - 1) * 100, 2),
+                    "observations": len(devs), "lowestDeviationPercent": round(min(devs) * 100, 2)})
+        if len(devs) < MA_MIN_OBS:
+            row["status"] = "DIP_NEEDS_MORE_DAYS"
+            out.append(row)
+            continue
+        low = sorted(devs)[:max(1, int(len(devs) * MA_DIP_FRACTION))]
+        dip = sum(low) / len(low)
+        buy = to_tick(ma * (1 + dip))
+        row.update({"status": "OK", "dipPercent": round(dip * 100, 2), "buyPrice": buy,
+                    "moveToBuyPercent": round((buy / closes[-1] - 1) * 100, 2)})
+        out.append(row)
+    return out
+
+
 def analyze(series):
     closes, splits = adjust_splits(series)
     if len(closes) < LOOKBACK + FORWARD + 20:
@@ -87,6 +134,7 @@ def analyze(series):
                       "p30": round(pct(win, .3), 2), "median": round(pct(win, .5), 2),
                       "high": win[-1], "low": win[0]},
         "currentPercentile": round(sum(1 for v in win if v <= cur) / len(win), 3),
+        "maDeviation": ma_deviation(closes),
         "backtest": {"rule": "收盤<=前252日P20，持有120交易日（價格報酬，未含配息）",
                      "signalDays": zone_days, "samples": len(rets)},
     }
