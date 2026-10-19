@@ -171,9 +171,13 @@ class EtfPublication:
     manifest: Optional[dict] = None
 
 
+HISTORY_FILE = "etf-history.json"  # Phase 8P: optional second file of the same release (see etf_history.py)
+
+
 def publish_etf(doc: Optional[dict], out_root: Path, now: datetime, cal: TradingCalendar, published_at: Optional[str] = None, source_error: Optional[str] = None,
-                final: bool = True, allow_republish: bool = False) -> EtfPublication:
-    """Decide and (only for PUBLISHED) write: release first, re-read and verify, manifest LAST. Every other outcome leaves the Last Known Good byte-identical."""
+                final: bool = True, allow_republish: bool = False, history_doc: Optional[dict] = None) -> EtfPublication:
+    """Decide and (only for PUBLISHED) write: release first, re-read and verify, manifest LAST. Every other outcome leaves the Last Known Good byte-identical.
+    With `history_doc` (Phase 8P) the release also carries etf-history.json; without it the release is exactly what it was before (release id = quotes hash)."""
     out_root = Path(out_root)
     now = D.to_taipei(now)
     previous = read_etf_manifest(out_root)
@@ -196,14 +200,20 @@ def publish_etf(doc: Optional[dict], out_root: Path, now: datetime, cal: Trading
     pre = classify_outcome(**common, published_ok=True)  # the hard failures (malformed / future / regressed) still win over "publish"
     if pre.status != "PUBLISHED":
         return EtfPublication(pre)
-    release = h[:12]
+    hblob = dumps(history_doc) if history_doc is not None else None
+    hh = sha(hblob) if hblob is not None else None
+    release = h[:12] if hh is None else sha((h + hh).encode("ascii"))[:12]
     rel_dir = out_root / "etf" / "releases" / release
     write_atomic(rel_dir / FILE, blob)
-    if sha((rel_dir / FILE).read_bytes()) != h:
+    if hblob is not None:
+        write_atomic(rel_dir / HISTORY_FILE, hblob)
+    if sha((rel_dir / FILE).read_bytes()) != h or (hblob is not None and sha((rel_dir / HISTORY_FILE).read_bytes()) != hh):
         return EtfPublication(Outcome("FAILED", "GATE_REFUSED", False, "the release on disk does not match what was written"))
     manifest = {"schemaVersion": ETF_SCHEMA_VERSION, "kind": KIND, "release": release, "priceDate": doc["priceDate"], "retrievedAt": doc["retrievedAt"],
                 "publishedAt": published_at or now.isoformat(timespec="seconds"), "generatedAt": doc["generatedAt"], "sourceId": SOURCE_ID,
-                "files": {FILE: {"path": f"etf/releases/{release}/{FILE}", "sha256": h, "bytes": len(blob)}}, "contentSha256": content_hash(doc),
+                "files": {FILE: {"path": f"etf/releases/{release}/{FILE}", "sha256": h, "bytes": len(blob)},
+                          **({HISTORY_FILE: {"path": f"etf/releases/{release}/{HISTORY_FILE}", "sha256": hh, "bytes": len(hblob)}} if hblob is not None else {})},
+                "contentSha256": content_hash(doc),
                 "hashSemantics": doc["integrity"]["sha256Semantics"], "counts": doc["counts"]}
     write_atomic(out_root / "etf" / "manifest.json", dumps(manifest))  # LAST
     return EtfPublication(classify_outcome(**common, published_ok=True), manifest)

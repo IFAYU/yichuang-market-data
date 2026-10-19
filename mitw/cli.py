@@ -52,6 +52,22 @@ def cmd_run_daily(args) -> int:
     return 1 if str(rec.status).startswith("FAILED") else 0
 
 
+def cmd_etf_publish(args) -> int:
+    """Phase 8P: fetch the two official ETF files, publish etf-quotes.json + etf-history.json (the day's closes are appended to the published history). NO_UPDATE / PENDING are normal."""
+    from .etf_runner import run_etf_publish
+    r = run_etf_publish(Path(args.out), allow_republish=args.republish)
+    print(json.dumps(r, ensure_ascii=False, indent=1))
+    return 1 if str(r["status"]).startswith("FAILED") else 0
+
+
+def cmd_etf_history_seed(args) -> int:
+    """Phase 8P: ONE-TIME, manual seeding of past closes (about 3 s per ETF-month). Never scheduled."""
+    from .etf_runner import run_history_seed
+    r = run_history_seed(Path(args.out), months=args.months, symbols=args.symbols)
+    print(json.dumps(r, ensure_ascii=False, indent=1))
+    return 1 if r["failed"] else 0
+
+
 def cmd_push_paths(args) -> int:
     """Stage ONLY the given paths on the data branch checkout and push them fast-forward only; reconcile only a remote move that is disjoint from --guard."""
     from .gitpublish import PublishRace, publish_paths
@@ -154,6 +170,13 @@ def main(argv=None) -> int:
     rd.add_argument("--manual-closures", default=None, help="explicit closures file (default: config/manual_closures.json)")
     rd.add_argument("--republish", action="store_true", help="explicit, recorded exception: publish although no market is newer than the published release")
     rd.add_argument("--force-market", nargs="*", default=None, choices=["TWSE", "TPEX"], help="manual dispatch: also query these markets (still judged against their own target)")
+    ep = sub.add_parser("etf-publish", help="Phase 8P: publish the ETF quotes and the close history to <out>/etf/ (official read-only GETs)")
+    ep.add_argument("--out", default=str(OUT_DIR))
+    ep.add_argument("--republish", action="store_true", help="explicit, recorded exception: publish although the trade date did not move")
+    eh = sub.add_parser("etf-history-seed", help="Phase 8P: ONE-TIME manual seeding of past closes into the published ETF release (about 3 s per ETF-month; never scheduled)")
+    eh.add_argument("--out", default=str(OUT_DIR))
+    eh.add_argument("--months", type=int, default=14)
+    eh.add_argument("--symbols", nargs="*", default=None)
     pp = sub.add_parser("push-paths", help="stage ONLY explicit paths on the data branch and push fast-forward only (no force), verifying the remote head")
     pp.add_argument("--repo", required=True)
     pp.add_argument("--branch", default="data")
@@ -186,7 +209,7 @@ def main(argv=None) -> int:
     mf = sub.add_parser("mark-failed", help="rewrite the last run record as FAILED (release not readable from the public site)")
     mf.add_argument("--reason", required=True)
     args = ap.parse_args(argv)
-    return {"fetch": cmd_fetch, "run": cmd_run, "run-daily": cmd_run_daily, "push-paths": cmd_push_paths, "mark-verified": cmd_mark_verified, "reconcile-health": cmd_reconcile_health, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
+    return {"fetch": cmd_fetch, "run": cmd_run, "run-daily": cmd_run_daily, "push-paths": cmd_push_paths, "etf-publish": cmd_etf_publish, "etf-history-seed": cmd_etf_history_seed, "mark-verified": cmd_mark_verified, "reconcile-health": cmd_reconcile_health, "build": cmd_build, "sync": cmd_sync, "health": cmd_health, "rollback": cmd_rollback,
             "verify-remote": cmd_verify_remote, "mark-failed": cmd_mark_failed}[args.cmd](args)
 
 
