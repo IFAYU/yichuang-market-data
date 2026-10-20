@@ -1,0 +1,197 @@
+{
+ "companyCount": 1989,
+ "decision": {
+  "advanced": [
+   "TPEX"
+  ],
+  "attempt": "MORNING_TWSE",
+  "behind": [],
+  "carried": [
+   "TWSE"
+  ],
+  "fallbacks": [],
+  "reason": "every owed market reached its own target date",
+  "state": "SUCCESS",
+  "trigger": "schedule"
+ },
+ "files": {
+  "industry-snapshots.json": {
+   "bytes": 462185,
+   "path": "releases/dc0cf61f9ee6/industry-snapshots.json",
+   "sha256": "8a1c1bde67d7856c4ef68d9a05d1dc0a691a38c212959de4736cc32fd60bf8e7"
+  },
+  "market-snapshot.json": {
+   "bytes": 3705163,
+   "path": "releases/dc0cf61f9ee6/market-snapshot.json",
+   "sha256": "21644039850b1de573ed302147aa7be430ee1575ffd75b1ea5a8ea60e327e5a5"
+  }
+ },
+ "financialAsOf": {
+  "epsPeriod": "2026Q2",
+  "eps_basis": "CUMULATIVE_YTD",
+  "monthlyRevenuePeriod": "2026-09"
+ },
+ "freshnessAtPublish": {
+  "TPEX": {
+   "expectedMarketDate": "2026-10-20",
+   "lagTradingDays": 0,
+   "status": "FRESH"
+  },
+  "TWSE": {
+   "expectedMarketDate": "2026-10-19",
+   "lagTradingDays": 0,
+   "status": "FRESH"
+  }
+ },
+ "gate": {
+  "checks": [
+   {
+    "detail": "schemaVersion ['1.4.0'], supported 1.x",
+    "name": "schema",
+    "ok": true
+   },
+   {
+    "detail": "coverage and statistics consistent",
+    "name": "coverage",
+    "ok": true
+   },
+   {
+    "detail": "outlier policy, fences and percentile definition present; official P/E basis OFFICIAL_TTM",
+    "name": "methodology",
+    "ok": true
+   },
+   {
+    "detail": "marketAsOf={'TWSE': '2026-10-19', 'TPEX': '2026-10-20'}",
+    "name": "market-date-present",
+    "ok": true
+   },
+   {
+    "detail": "no market moves backwards (latest {'TPEX': '2026-10-19', 'TWSE': '2026-10-19'})",
+    "name": "not-older-than-latest",
+    "ok": true
+   },
+   {
+    "detail": "newer: ['TPEX']",
+    "name": "a-market-advances",
+    "ok": true
+   },
+   {
+    "detail": "every market meets its own target date (dates may differ between markets)",
+    "name": "each-market-meets-its-own-target",
+    "ok": true
+   },
+   {
+    "detail": "TWSE: FRESH; TPEX: FRESH",
+    "name": "freshness-determinable",
+    "ok": true
+   }
+  ],
+  "exceptions": [],
+  "passed": true
+ },
+ "generatedAt": "2026-10-21T01:53:37+08:00",
+ "lastSuccessfulPublication": "2026-10-21T01:53:37+08:00",
+ "marketAsOf": {
+  "TPEX": "2026-10-20",
+  "TWSE": "2026-10-19"
+ },
+ "markets": {
+  "TPEX": {
+   "aheadOfTarget": false,
+   "availabilityBasis": "EMPIRICALLY_OBSERVED",
+   "carried": false,
+   "evidenceLevel": "EMPIRICALLY_OBSERVED",
+   "expectedBy": "21:00",
+   "expectedMarketDate": "2026-10-20",
+   "marketDate": "2026-10-20",
+   "offsetDays": 0,
+   "previousPublishedMarketDate": "2026-10-19",
+   "rawPartition": "2026-10-21",
+   "targetReached": true
+  },
+  "TWSE": {
+   "aheadOfTarget": false,
+   "availabilityBasis": "EMPIRICALLY_OBSERVED",
+   "carried": true,
+   "evidenceLevel": "EMPIRICALLY_OBSERVED",
+   "expectedBy": "06:30",
+   "expectedMarketDate": "2026-10-19",
+   "marketDate": "2026-10-19",
+   "offsetDays": 1,
+   "previousPublishedMarketDate": "2026-10-19",
+   "rawPartition": "2026-10-21",
+   "targetReached": true
+  }
+ },
+ "publicationPolicy": {
+  "attempts": [
+   "21:00",
+   "22:00",
+   "23:00"
+  ],
+  "calendar": {
+   "closedDates": [
+    "2026-01-01",
+    "2026-02-12",
+    "2026-02-13",
+    "2026-02-16",
+    "2026-02-17",
+    "2026-02-18",
+    "2026-02-19",
+    "2026-02-20",
+    "2026-02-27",
+    "2026-04-03",
+    "2026-04-06",
+    "2026-05-01",
+    "2026-06-19",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-10-09",
+    "2026-10-26",
+    "2026-12-25"
+   ],
+   "coveredFrom": "2026-01-01",
+   "coveredTo": "2026-12-31",
+   "extraClosures": [],
+   "fetchedAt": "2026-10-21T01:53:37+08:00",
+   "manualClosures": [],
+   "source": "TWSE_OPENAPI_holidaySchedule"
+  },
+  "markets": {
+   "TPEX": {
+    "basis": "EMPIRICALLY_OBSERVED",
+    "earliestSeen": "18:00",
+    "evidence": "Last-Modified 18:00 on D=2026-10-06 and 22:00 on D=2026-10-07 (2 observations; cadence between them unknown). Operational target: first attempt 21:00 (not a guarantee)",
+    "expectedBy": "21:00",
+    "firstAttempt": "21:00",
+    "offsetDays": 0
+   },
+   "TWSE": {
+    "basis": "EMPIRICALLY_OBSERVED",
+    "earliestSeen": "05:00",
+    "evidence": "Last-Modified 05:20:4x Taipei on D+1 for D=2026-10-05 and D=2026-10-06 (2 observations; weekend D+1 not yet observed). Operational target 06:30 (not a guarantee)",
+    "expectedBy": "06:30",
+    "firstAttempt": "06:30",
+    "offsetDays": 1
+   }
+  },
+  "policy": "DAILY_TRADING_DAY",
+  "scheduleWeekdays": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "timezone": "Asia/Taipei",
+  "windowClosesAt": "24:00"
+ },
+ "publishedAt": "2026-10-21T01:53:37+08:00",
+ "release": "dc0cf61f9ee6",
+ "runDate": "2026-10-21",
+ "schemaVersion": "1.4.0",
+ "sourceFetchedAt": "2026-10-21T01:53:47+08:00",
+ "sourceHash": "dc0cf61f9ee6fd8b55a8da6307c9385712ad04182f6ea120a43d0d46bbb22a04",
+ "timezone": "Asia/Taipei",
+ "updatePolicy": "DAILY_TRADING_DAY"
+}
