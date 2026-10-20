@@ -85,7 +85,9 @@ def run_history_seed(out_root: Path, months: int = 14, symbols: Optional[list] =
     today = today_iso or now_taipei().date().isoformat()
     cur = today[:7].replace('-', '')
     # a past month that already has data for this ETF is not requested again (only the current month is refreshed)
-    skip = lambda s, ym: ym != cur and any(d.startswith(f'{ym[:4]}-{ym[4:]}') for d in hist.get(s, {}))  # noqa: E731
+    # the oldest month on file may have lost its first days to trimming, so it is requested again as well
+    oldest = {s: min(days)[:7] for s, days in hist.items() if days}
+    skip = lambda s, ym: ym != cur and s in oldest and f'{ym[:4]}-{ym[4:]}' > oldest[s] and any(d.startswith(f'{ym[:4]}-{ym[4:]}') for d in hist[s])  # noqa: E731
     r = H.seed_from_months(hist, syms, H.month_list(today, months), fetch_month, sleep=sleep, gap_s=gap_s, skip=skip)
     m = E.read_etf_manifest(out_root)
     qpath = Path(out_root) / m["files"][E.FILE]["path"]

@@ -75,7 +75,10 @@ class Runner(unittest.TestCase):
         self.assertEqual(calls, [("0050", "202609"), ("0050", "202610")])
         calls.clear()
         run_history_seed(self.out, months=3, symbols=["0050"], today_iso="2026-10-14", fetch_month=fm, sleep=lambda s: None)
-        self.assertEqual(calls, [("0050", "202608"), ("0050", "202610")])  # 202609 is on file; the current month is refreshed; 202608 is new
+        self.assertEqual(calls, [("0050", "202608"), ("0050", "202609"), ("0050", "202610")])  # 202609 is the oldest month on file (may be trimmed) so it is requested again; the current month is refreshed
+        calls.clear()
+        run_history_seed(self.out, months=3, symbols=["0050"], today_iso="2026-10-14", fetch_month=fm, sleep=lambda s: None)
+        self.assertEqual(calls, [("0050", "202608"), ("0050", "202610")])  # 202609 is no longer the oldest month, so it is skipped
 
     def test_seeding_needs_published_quotes_or_explicit_symbols(self):
         with self.assertRaises(SystemExit):

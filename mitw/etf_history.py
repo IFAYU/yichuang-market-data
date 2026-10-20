@@ -23,7 +23,7 @@ from .etf import read_etf_manifest
 HISTORY_FILE = "etf-history.json"
 HISTORY_KIND = "TW_LISTED_ETF_CLOSE_HISTORY"
 HISTORY_SCHEMA_VERSION = "1.0.0"
-KEEP_DAYS = 420  # trading days kept per ETF (enough for a 240-day average plus the deviation history)
+KEEP_DAYS = 900  # trading days kept per ETF (about 3.5 years: a 240-day average plus a long deviation history)
 _ISO = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _CLOSE = re.compile(r"^\d{1,7}(\.\d{1,4})?$")
 

@@ -49,7 +49,7 @@ class Build(unittest.TestCase):
         self.assertEqual(append_quotes(h, q), 0)  # the same day again adds nothing
 
     def test_doc_is_sorted_trimmed_string_closes_and_says_redistribution_is_unconfirmed(self):
-        h = {"0056": {f"{y}-{m:02d}-{d:02d}": "50.00" for y in (2024, 2025) for m in range(1, 13) for d in range(1, 29)}, "0050": {"2026-10-01": "100.10"}, "ZZZZ": {"2026-10-01": "1.00"}}
+        h = {"0056": {f"{y}-{m:02d}-{d:02d}": "50.00" for y in (2022, 2023, 2024, 2025) for m in range(1, 13) for d in range(1, 29)}, "0050": {"2026-10-01": "100.10"}, "ZZZZ": {"2026-10-01": "1.00"}}
         d = build_history_doc(h, ["0056", "0050", "9999"], "2026-10-13T00:00:00+08:00", "2026-10-13")
         self.assertEqual(sorted(d["symbols"]), ["0050", "0056"])
         self.assertEqual(len(d["symbols"]["0056"]), KEEP_DAYS)
