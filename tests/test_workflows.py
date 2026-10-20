@@ -7,6 +7,7 @@ from pathlib import Path
 W = Path(__file__).resolve().parent.parent / ".github" / "workflows"
 WEEKLY_SHA256 = "dcb1041151617b1fd7f4eae2bef77d4bc1af89ce657e811fff6f3adf18ef30a3"  # weekly-publish.yml with LF line endings (the form git stores and GitHub checks out; a Windows working copy has CRLF)
 NEW = ("weekday-market-publish.yml", "weekday-emerging-publish.yml")
+MANUAL_ONLY = ("weekday-emerging-publish.yml",)   # the TWSE/TPEx daily workflow was scheduled on 2026-10-14 (cut-over approved); 興櫃 stays manual
 
 
 def code_lines(name):
@@ -14,16 +15,24 @@ def code_lines(name):
 
 
 class Workflows(unittest.TestCase):
-    def test_the_new_workflows_have_no_schedule_and_no_cron(self):
-        for n in NEW:
+    def test_the_emerging_workflow_has_no_schedule_and_no_cron(self):
+        for n in MANUAL_ONLY:
             text = "\n".join(code_lines(n))
             self.assertNotRegex(text, r"(?m)^\s*schedule\s*:", n)
             self.assertNotRegex(text, r"cron\s*:", n)
             self.assertNotIn("* * *", text, n)
             self.assertRegex(text, r"(?m)^on:\s*\n\s+workflow_dispatch:", n)
 
-    def test_only_manual_triggers_exist(self):
-        for n in NEW:
+    def test_the_market_workflow_schedule_is_exactly_the_documented_slots_and_scheduled_runs_say_so(self):
+        from mitw.daily import CRON_UTC, MORNING_CRON_UTC, SATURDAY_RETRY_CRON_UTC
+        text = (W / "weekday-market-publish.yml").read_text(encoding="utf-8")
+        crons = re.findall(r'(?m)^\s*-\s*cron:\s*"([^"]+)"', "\n".join(code_lines("weekday-market-publish.yml")))
+        self.assertEqual(crons, list(CRON_UTC) + [MORNING_CRON_UTC] + list(SATURDAY_RETRY_CRON_UTC))
+        self.assertIn("workflow_dispatch:", text)                                          # the manual catch-up still exists
+        self.assertIn("github.event_name == 'schedule' && 'schedule' || 'manual'", text)   # a scheduled run is recorded as a scheduled attempt, a hand run as manual
+
+    def test_only_manual_triggers_exist_for_emerging(self):
+        for n in MANUAL_ONLY:
             on_block = re.search(r"(?ms)^on:\n(.*?)^\S", "\n".join(code_lines(n)) + "\nX")
             keys = re.findall(r"(?m)^  ([a-z_]+):", on_block.group(1))
             self.assertEqual(keys, ["workflow_dispatch"], n)
@@ -83,8 +92,10 @@ class Workflows(unittest.TestCase):
             doc = yaml.safe_load((W / n).read_text(encoding="utf-8"))
             self.assertIn("jobs", doc, n)
             on = doc.get("on", doc.get(True))
-            if n in NEW:
+            if n in MANUAL_ONLY:
                 self.assertEqual(list(on), ["workflow_dispatch"], n)
+            if n == "weekday-market-publish.yml":
+                self.assertEqual(sorted(on), ["schedule", "workflow_dispatch"], n)
 
 
 if __name__ == "__main__":
