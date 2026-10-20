@@ -217,3 +217,30 @@ def publish_etf(doc: Optional[dict], out_root: Path, now: datetime, cal: Trading
                 "hashSemantics": doc["integrity"]["sha256Semantics"], "counts": doc["counts"]}
     write_atomic(out_root / "etf" / "manifest.json", dumps(manifest))  # LAST
     return EtfPublication(classify_outcome(**common, published_ok=True), manifest)
+
+
+KEEP_RELEASES = 7  # the published ETF history is about 2 MB, so a daily release must not pile up forever
+
+
+def prune_releases(out_root: Path, keep: int = KEEP_RELEASES) -> list:
+    """Delete old ETF releases from the working tree: always keep the one the manifest points at, then the newest by `generatedAt`; what cannot be read is kept."""
+    import shutil
+    out_root = Path(out_root)
+    root = out_root / "etf" / "releases"
+    if not root.is_dir():
+        return []
+    live = (read_etf_manifest(out_root) or {}).get("release")
+    dated, kept = [], set([live] if live else [])
+    for d in root.iterdir():
+        if not d.is_dir():
+            continue
+        try:
+            dated.append((json.loads((d / FILE).read_text(encoding="utf-8"))["generatedAt"], d.name))
+        except (OSError, ValueError, KeyError):
+            kept.add(d.name)
+    for _, name in sorted(dated, reverse=True)[:max(keep, 1)]:
+        kept.add(name)
+    gone = sorted(n for _, n in dated if n not in kept)
+    for n in gone:
+        shutil.rmtree(root / n)
+    return gone

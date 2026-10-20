@@ -1,0 +1,76 @@
+name: etf-daily-data
+
+# Phase 8P: the daily ETF publication. The official TWSE closing-price file for trading day D is observed to be there from D+1 morning, so the runs are
+# Tue-Sat 07:30 and 10:00 (Asia/Taipei). A run with nothing new is a normal NO_UPDATE. ETF is its own failure domain: it only ever writes under etf/
+# and never touches /manifest.json, /health.json, /releases/ or /emerging/. Two official GETs per run (quotes + fund master), no history requests:
+# the day's closes are appended to the history already published.
+on:
+  schedule:
+    - cron: "30 23 * * 1-5"   # 07:30 Taipei, Tue-Sat
+    - cron: "0 2 * * 2-6"     # 10:00 Taipei, Tue-Sat
+  workflow_dispatch:
+    inputs:
+      republish:
+        description: "EXPLICIT EXCEPTION: publish the same trade date again."
+        type: boolean
+        default: false
+
+concurrency:
+  group: market-data-etf
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PAGES_URL: https://ifayu.github.io/yichuang-market-data
+  TZ: Asia/Taipei
+
+jobs:
+  publish-etf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: data
+          path: out
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -t .
+
+      - name: Fetch, append to the history, decide
+        id: build
+        shell: bash
+        run: |
+          set +e
+          python -m mitw.cli etf-publish --out out ${{ inputs.republish && '--republish' || '' }} | tee decision.json
+          echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          d = json.loads(open("decision.json").read())
+          print("### ETF daily:", d["status"])
+          print(d.get("reason") or "")
+          PY
+
+      - name: Publish (release first, verify, manifest last)
+        shell: bash
+        run: |
+          set -uo pipefail
+          GUARD="--guard etf/"
+          if [ -n "$(git -C out status --porcelain -- etf/manifest.json)" ]; then
+            REL=$(python -c "import json;print(json.load(open('out/etf/manifest.json'))['release'])")
+            git -C out config user.name "github-actions[bot]"
+            git -C out config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            python -m mitw.cli push-paths --repo out --branch data --path etf/releases $GUARD --message "etf release $REL (immutable; not live until etf/manifest.json points at it)" || exit 7
+            if ! python scripts/verify_etf_public.py --base "$PAGES_URL" --manifest out/etf/manifest.json; then
+              echo "release not readable from the public site: etf/manifest.json is NOT updated (Last Known Good stays)"
+              exit 1
+            fi
+            python -m mitw.cli push-paths --repo out --branch data --path etf/manifest.json $GUARD --message "publish etf $REL" || exit 7
+          fi
+          [ "${{ steps.build.outputs.rc }}" = "0" ] || exit 1

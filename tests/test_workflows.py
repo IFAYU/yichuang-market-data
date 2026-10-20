@@ -61,6 +61,19 @@ class Workflows(unittest.TestCase):
         self.assertFalse(any(p.startswith("emerging") for p in m_paths), m_paths)                    # the main publisher never writes emerging files
         self.assertTrue({"releases", "manifest.json", "health.json"} >= set(m_paths), m_paths)       # and only its own three paths
 
+    def test_the_etf_publisher_owns_only_etf_paths_verifies_before_the_manifest_and_never_forces(self):
+        t = (W / "etf-daily-publish.yml").read_text(encoding="utf-8")
+        paths = re.findall(r"--path (\S+)", t)
+        self.assertTrue(paths and all(p.startswith("etf/") for p in paths), paths)
+        self.assertEqual([g.strip('"') for g in re.findall(r"--guard (\S+)", t)], ["etf/"])
+        self.assertLess(t.index("--path etf/releases"), t.index("verify_etf_public.py"))
+        self.assertLess(t.index("verify_etf_public.py"), t.index("--path etf/manifest.json"))
+        self.assertNotRegex(chr(10).join(code_lines("etf-daily-publish.yml")), r"--force(?!-market)|push -f|git add -A|git add \.")
+        self.assertIn("cancel-in-progress: false", t)
+        self.assertNotIn("etf-history-seed", t)  # the seeding stays a manual, one-time command
+        self.assertEqual(re.search(r"group:\s*(\S+)", t).group(1), "market-data-etf")
+        self.assertEqual(len(re.findall(r"- cron:", t)), 2)
+
     def test_syntax_when_a_yaml_parser_is_available(self):
         try:
             import yaml

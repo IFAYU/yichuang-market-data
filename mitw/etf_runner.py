@@ -62,7 +62,8 @@ def run_etf_publish(out_root: Path, now: Optional[datetime] = None, fetch: Calla
         H.append_quotes(hist, doc)
         hist_doc = H.build_history_doc(hist, [i["symbol"] for i in doc["instruments"] if i["supportStatus"] == "SUPPORTED"], stamp, doc["priceDate"])
     pub = E.publish_etf(doc, out_root, now, cal, source_error=err, allow_republish=allow_republish, history_doc=hist_doc)
-    return {"status": pub.outcome.status, "reason": getattr(pub.outcome, "reason", None), "calendar": cal_source, "release": (pub.manifest or {}).get("release")}
+    pruned = E.prune_releases(out_root) if pub.outcome.status == "PUBLISHED" else []
+    return {"status": pub.outcome.status, "reason": getattr(pub.outcome, "reason", None), "calendar": cal_source, "release": (pub.manifest or {}).get("release"), "pruned": pruned}
 
 
 def supported_symbols(out_root: Path) -> list:

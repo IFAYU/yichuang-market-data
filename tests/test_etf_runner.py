@@ -35,6 +35,19 @@ class Runner(unittest.TestCase):
         self.assertTrue(all(sorted(v) == ["2026-10-13", "2026-10-14"] for v in h2.values()))
         self.assertIn("0050", h2)
 
+    def test_old_releases_are_pruned_but_the_live_one_and_the_newest_stay(self):
+        days = ["2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16", "2026-10-19", "2026-10-20"]
+        for d in days:
+            r = run_etf_publish(self.out, datetime.fromisoformat(f"{d}T18:00:00+08:00"), self.fetcher(d), calendar_rows=HOLIDAYS)
+            self.assertEqual(r["status"], "PUBLISHED")
+        self.assertEqual(len(list((self.out / "etf" / "releases").iterdir())), len(days))  # under the limit: nothing is deleted
+        live = json.loads((self.out / "etf" / "manifest.json").read_text(encoding="utf-8"))["release"]
+        gone = E.prune_releases(self.out, keep=2)
+        self.assertEqual(len(gone), len(days) - 2)
+        left = sorted(p.name for p in (self.out / "etf" / "releases").iterdir())
+        self.assertIn(live, left); self.assertEqual(len(left), 2)
+        self.assertEqual(E.prune_releases(self.out, keep=2), [])
+
     def test_a_refusing_or_broken_source_publishes_nothing_and_leaves_the_last_known_good(self):
         run_etf_publish(self.out, datetime.fromisoformat("2026-10-13T18:00:00+08:00"), self.fetcher("2026-10-13"), calendar_rows=HOLIDAYS)
         before = (self.out / "etf" / "manifest.json").read_bytes()
