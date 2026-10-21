@@ -1,8 +1,14 @@
 name: weekday-emerging-data
 
-# Phase 3I.2: MANUAL ONLY. There is deliberately NO `schedule:` (and no cron) in this file. 興櫃 publication is its own failure domain: it only ever
+# 興櫃 daily publication (scheduled 2026-10-21, approved by the owner; it was manual-only since Phase 3I.2). Slots come from mitw/daily.py (GitHub cron is UTC):
+#   CRON_UTC  21:00 / 22:00 / 23:00 Taipei, Mon-Fri   (興櫃 primary / retry / final; the 23:00 run is the only one that may declare a failure)
+# Every run is idempotent: the precheck returns NOOP with zero requests when nothing is owed. 興櫃 publication is its own failure domain: it only ever
 # writes under emerging/ and never touches /manifest.json, /health.json or /releases/ of the TWSE / TPEx publication. weekly-publish.yml is untouched.
 on:
+  schedule:
+    - cron: "0 13 * * 1-5"
+    - cron: "0 14 * * 1-5"
+    - cron: "0 15 * * 1-5"
   workflow_dispatch:
     inputs:
       trigger:
@@ -54,7 +60,7 @@ jobs:
         run: |
           set +e
           python scripts/build_emerging_snapshot.py --daily --fetch --api api --out out --calendar calendar.json \
-            --current-manifest out/emerging/manifest.json --trigger manual ${{ inputs.republish && '--republish' || '' }} | tee decision.json
+            --current-manifest out/emerging/manifest.json --trigger ${{ github.event_name == 'schedule' && 'schedule' || 'manual' }} ${{ inputs.republish && '--republish' || '' }} | tee decision.json
           echo "rc=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
           python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
           import json
