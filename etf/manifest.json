@@ -1,31 +1,31 @@
 {
- "contentSha256": "252b8f87799efb96b95501eddc1b4f0fff68686d7485ec447c739e29e0764b8c",
+ "contentSha256": "13820da26378814b40d210e6432ce2a503f1eca14f98891a8903ca81112fa01c",
  "counts": {
   "funds": 273,
   "notSupported": 184,
   "supported": 89,
-  "supportedWithClose": 83,
-  "supportedWithoutClose": 6
+  "supportedWithClose": 84,
+  "supportedWithoutClose": 5
  },
  "files": {
   "etf-history.json": {
-   "bytes": 1937888,
-   "path": "etf/releases/e1de056575e4/etf-history.json",
-   "sha256": "549b0b925e868e5daf5fb614cee8fe8331ac6bce8ebee9f9a13da5f1b3d1f4c7"
+   "bytes": 1937930,
+   "path": "etf/releases/3a15537577b5/etf-history.json",
+   "sha256": "8de06d664a34d02532b931a5eba387b0091e843e1b7b71ea39be28477045b485"
   },
   "etf-quotes.json": {
-   "bytes": 142209,
-   "path": "etf/releases/e1de056575e4/etf-quotes.json",
-   "sha256": "3005da6220413aba15353634e36c7cf40a3320fa019661fabe8cc78638e6459e"
+   "bytes": 142207,
+   "path": "etf/releases/3a15537577b5/etf-quotes.json",
+   "sha256": "6de2f6cbb9508e0677d6b687b83a1466d6c90d47de8b53a09a3de15c5d4d283e"
   }
  },
- "generatedAt": "2026-10-20T20:13:10+08:00",
+ "generatedAt": "2026-10-21T09:55:23+08:00",
  "hashSemantics": "CONTENT_CONSISTENCY_ONLY: proves the bytes equal what the publisher wrote; the publisher computes it, so it is not an independent source authentication",
  "kind": "TW_LISTED_ETF_CLOSING_QUOTES",
- "priceDate": "2026-10-19",
- "publishedAt": "2026-10-20T20:13:10+08:00",
- "release": "e1de056575e4",
- "retrievedAt": "2026-10-20T20:13:10+08:00",
+ "priceDate": "2026-10-20",
+ "publishedAt": "2026-10-21T09:55:23+08:00",
+ "release": "3a15537577b5",
+ "retrievedAt": "2026-10-21T09:55:23+08:00",
  "schemaVersion": "1.0.0",
  "sourceId": "TWSE_OPENAPI_STOCK_DAY_ALL"
 }
