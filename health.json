@@ -1,22 +1,22 @@
 {
- "consecutiveFailures": 0,
+ "consecutiveFailures": 1,
  "lastFailure": {
   "daily": null,
-  "expectedLatestTradeDate": "2026-10-16",
-  "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-16', 'TWSE': '2026-10-16'}, fetched {'TWSE': '2026-10-16', 'TPEX': '2026-10-16'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
-  "finishedAt": "2026-10-18T23:23:46+08:00",
+  "expectedLatestTradeDate": "2026-10-23",
+  "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+  "finishedAt": "2026-10-25T23:34:30+08:00",
   "marketDates": {
-   "TPEX": "2026-10-16",
-   "TWSE": "2026-10-16"
+   "TPEX": "2026-10-22",
+   "TWSE": "2026-10-22"
   },
   "publication": "NO_NEW_MARKET_DATA",
-  "publishReasonCode": "RUN_FAILED",
+  "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
   "publishStatus": "FAILED",
   "release": null,
-  "requests": 20,
-  "runId": "20261018T232254",
-  "scheduledSlot": "2026-10-18T10:00:00+08:00",
-  "startedAt": "2026-10-18T23:22:54+08:00",
+  "requests": 22,
+  "runId": "20261025T233305",
+  "scheduledSlot": "2026-10-25T10:00:00+08:00",
+  "startedAt": "2026-10-25T23:33:05+08:00",
   "status": "FAILED",
   "trigger": "schedule"
  },
@@ -42,33 +42,13 @@
  },
  "latestOutcome": {
   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-  "publishStatus": "PENDING",
-  "runId": "20261025T184234",
-  "startedAt": "2026-10-25T18:42:34+08:00",
-  "status": "WAITING"
+  "publishStatus": "FAILED",
+  "runId": "20261025T233305",
+  "startedAt": "2026-10-25T23:33:05+08:00",
+  "status": "FAILED"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-10-09",
-   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'})",
-   "finishedAt": "2026-10-11T20:06:45+08:00",
-   "marketDates": {
-    "TPEX": "2026-10-08",
-    "TWSE": "2026-10-08"
-   },
-   "publication": "NO_NEW_MARKET_DATA",
-   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-   "publishStatus": "PENDING",
-   "release": null,
-   "requests": 20,
-   "runId": "20261011T200549",
-   "scheduledSlot": "2026-10-11T10:00:00+08:00",
-   "startedAt": "2026-10-11T20:05:49+08:00",
-   "status": "WAITING",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-09",
@@ -648,31 +628,51 @@
    "startedAt": "2026-10-25T18:42:34+08:00",
    "status": "WAITING",
    "trigger": "schedule"
-  }
- ],
- "schemaVersion": 2,
- "updatedAt": "2026-10-25T18:43:25+08:00",
- "weekly": {
-  "freshnessWhenWritten": "UNKNOWN",
-  "lastFailureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-16', 'TWSE': '2026-10-16'}, fetched {'TWSE': '2026-10-16', 'TPEX': '2026-10-16'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
-  "lastScheduledRun": {
+  },
+  {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-23",
-   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (a scheduled retry is still due)",
-   "finishedAt": "2026-10-25T18:43:25+08:00",
+   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+   "finishedAt": "2026-10-25T23:34:30+08:00",
    "marketDates": {
     "TPEX": "2026-10-22",
     "TWSE": "2026-10-22"
    },
    "publication": "NO_NEW_MARKET_DATA",
    "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-   "publishStatus": "PENDING",
+   "publishStatus": "FAILED",
    "release": null,
-   "requests": 20,
-   "runId": "20261025T184234",
+   "requests": 22,
+   "runId": "20261025T233305",
    "scheduledSlot": "2026-10-25T10:00:00+08:00",
-   "startedAt": "2026-10-25T18:42:34+08:00",
-   "status": "WAITING",
+   "startedAt": "2026-10-25T23:33:05+08:00",
+   "status": "FAILED",
+   "trigger": "schedule"
+  }
+ ],
+ "schemaVersion": 2,
+ "updatedAt": "2026-10-25T23:34:30+08:00",
+ "weekly": {
+  "freshnessWhenWritten": "UNKNOWN",
+  "lastFailureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+  "lastScheduledRun": {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-10-23",
+   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
+   "finishedAt": "2026-10-25T23:34:30+08:00",
+   "marketDates": {
+    "TPEX": "2026-10-22",
+    "TWSE": "2026-10-22"
+   },
+   "publication": "NO_NEW_MARKET_DATA",
+   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 22,
+   "runId": "20261025T233305",
+   "scheduledSlot": "2026-10-25T10:00:00+08:00",
+   "startedAt": "2026-10-25T23:33:05+08:00",
+   "status": "FAILED",
    "trigger": "schedule"
   },
   "lastSuccessfulPublication": "2026-10-23T08:49:00+08:00",
