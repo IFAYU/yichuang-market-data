@@ -1,5 +1,102 @@
 {
  "consecutiveFailures": 1,
+ "daily": {
+  "attempts": {
+   "TPEX": [
+    "21:00",
+    "22:00",
+    "23:00"
+   ],
+   "TWSE": [
+    "06:30"
+   ]
+  },
+  "freshnessWhenWritten": {
+   "TPEX": {
+    "expectedMarketDate": "2026-10-23",
+    "lagTradingDays": 1,
+    "reason": null,
+    "status": "STALE",
+    "updatePending": false
+   },
+   "TWSE": {
+    "expectedMarketDate": "2026-10-22",
+    "lagTradingDays": 0,
+    "reason": null,
+    "status": "FRESH",
+    "updatePending": true
+   }
+  },
+  "lastDecision": {
+   "attemptType": "MORNING_TWSE",
+   "businessTimeTaipei": "2026-10-26T08:33:34+08:00",
+   "companyCount": null,
+   "decision": "WAITING_FOR_NEW_MARKET_DATA",
+   "lastKnownGoodPreserved": true,
+   "lastKnownGoodRelease": "0d437e7ebe77",
+   "manifestUpdated": false,
+   "markets": {
+    "TPEX": {
+     "actualSourceMarketDate": "2026-10-22",
+     "availabilityBasis": "EMPIRICALLY_OBSERVED",
+     "carried": false,
+     "carryFallbackFetched": false,
+     "evidenceLevel": "EMPIRICALLY_OBSERVED",
+     "expectedMarketDate": "2026-10-23",
+     "previousPublishedMarketDate": "2026-10-22",
+     "queried": true
+    },
+    "TWSE": {
+     "actualSourceMarketDate": "2026-10-22",
+     "availabilityBasis": "EMPIRICALLY_OBSERVED",
+     "carried": false,
+     "carryFallbackFetched": false,
+     "evidenceLevel": "EMPIRICALLY_OBSERVED",
+     "expectedMarketDate": "2026-10-23",
+     "previousPublishedMarketDate": "2026-10-22",
+     "queried": true
+    }
+   },
+   "publicVerification": "NOT_APPLICABLE",
+   "reason": "NO_NEW_MARKET_DATA: TWSE still 2026-10-22 (owes 2026-10-23), TPEX still 2026-10-22 (owes 2026-10-23)",
+   "releaseId": null,
+   "sourceCounts": {
+    "requests": 4,
+    "reusedOrCarriedFiles": 16,
+    "rows": {
+     "tpex.companies": 894,
+     "tpex.form_basi": 1,
+     "tpex.form_bd": 7,
+     "tpex.form_fh": 1,
+     "tpex.form_ins": 1,
+     "tpex.industry_eps": 895,
+     "tpex.monthly_revenue": 893,
+     "tpex.prices": 13032,
+     "tpex.ratios": 891,
+     "tpex.swagger": 0,
+     "twse.companies": 1097,
+     "twse.form_basi": 10,
+     "twse.form_bd": 3,
+     "twse.form_fh": 13,
+     "twse.form_ins": 5,
+     "twse.industry_eps": 1086,
+     "twse.monthly_revenue": 1088,
+     "twse.prices": 1383,
+     "twse.ratios": 1084,
+     "twse.swagger": 0
+    }
+   },
+   "sourceHash": null,
+   "trigger": "schedule"
+  },
+  "lastSuccessfulPublication": "2026-10-23T08:49:00+08:00",
+  "marketAsOf": {
+   "TPEX": "2026-10-22",
+   "TWSE": "2026-10-22"
+  },
+  "timezone": "Asia/Taipei",
+  "updatePolicy": "DAILY_TRADING_DAY"
+ },
  "lastFailure": {
   "daily": null,
   "expectedLatestTradeDate": "2026-10-23",
@@ -42,33 +139,13 @@
  },
  "latestOutcome": {
   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-  "publishStatus": "FAILED",
-  "runId": "20261025T233305",
-  "startedAt": "2026-10-25T23:33:05+08:00",
-  "status": "FAILED"
+  "publishStatus": "PENDING",
+  "runId": "20261026T083334",
+  "startedAt": "2026-10-26T08:33:34+08:00",
+  "status": "WAITING_FOR_NEW_MARKET_DATA"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-10-09",
-   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-08', 'TWSE': '2026-10-08'}, fetched {'TWSE': '2026-10-08', 'TPEX': '2026-10-08'}) (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
-   "finishedAt": "2026-10-12T01:20:06+08:00",
-   "marketDates": {
-    "TPEX": "2026-10-08",
-    "TWSE": "2026-10-08"
-   },
-   "publication": "NO_NEW_MARKET_DATA",
-   "publishReasonCode": "RUN_FAILED",
-   "publishStatus": "FAILED",
-   "release": null,
-   "requests": 20,
-   "runId": "20261012T011912",
-   "scheduledSlot": "2026-10-11T10:00:00+08:00",
-   "startedAt": "2026-10-12T01:19:12+08:00",
-   "status": "FAILED",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-12",
@@ -648,48 +725,90 @@
    "startedAt": "2026-10-25T23:33:05+08:00",
    "status": "FAILED",
    "trigger": "schedule"
-  }
- ],
- "schemaVersion": 2,
- "updatedAt": "2026-10-25T23:34:30+08:00",
- "weekly": {
-  "freshnessWhenWritten": "UNKNOWN",
-  "lastFailureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
-  "lastScheduledRun": {
-   "daily": null,
+  },
+  {
+   "daily": {
+    "attemptType": "MORNING_TWSE",
+    "businessTimeTaipei": "2026-10-26T08:33:34+08:00",
+    "companyCount": null,
+    "decision": "WAITING_FOR_NEW_MARKET_DATA",
+    "lastKnownGoodPreserved": true,
+    "lastKnownGoodRelease": "0d437e7ebe77",
+    "manifestUpdated": false,
+    "markets": {
+     "TPEX": {
+      "actualSourceMarketDate": "2026-10-22",
+      "availabilityBasis": "EMPIRICALLY_OBSERVED",
+      "carried": false,
+      "carryFallbackFetched": false,
+      "evidenceLevel": "EMPIRICALLY_OBSERVED",
+      "expectedMarketDate": "2026-10-23",
+      "previousPublishedMarketDate": "2026-10-22",
+      "queried": true
+     },
+     "TWSE": {
+      "actualSourceMarketDate": "2026-10-22",
+      "availabilityBasis": "EMPIRICALLY_OBSERVED",
+      "carried": false,
+      "carryFallbackFetched": false,
+      "evidenceLevel": "EMPIRICALLY_OBSERVED",
+      "expectedMarketDate": "2026-10-23",
+      "previousPublishedMarketDate": "2026-10-22",
+      "queried": true
+     }
+    },
+    "publicVerification": "NOT_APPLICABLE",
+    "reason": "NO_NEW_MARKET_DATA: TWSE still 2026-10-22 (owes 2026-10-23), TPEX still 2026-10-22 (owes 2026-10-23)",
+    "releaseId": null,
+    "sourceCounts": {
+     "requests": 4,
+     "reusedOrCarriedFiles": 16,
+     "rows": {
+      "tpex.companies": 894,
+      "tpex.form_basi": 1,
+      "tpex.form_bd": 7,
+      "tpex.form_fh": 1,
+      "tpex.form_ins": 1,
+      "tpex.industry_eps": 895,
+      "tpex.monthly_revenue": 893,
+      "tpex.prices": 13032,
+      "tpex.ratios": 891,
+      "tpex.swagger": 0,
+      "twse.companies": 1097,
+      "twse.form_basi": 10,
+      "twse.form_bd": 3,
+      "twse.form_fh": 13,
+      "twse.form_ins": 5,
+      "twse.industry_eps": 1086,
+      "twse.monthly_revenue": 1088,
+      "twse.prices": 1383,
+      "twse.ratios": 1084,
+      "twse.swagger": 0
+     }
+    },
+    "sourceHash": null,
+    "trigger": "schedule"
+   },
    "expectedLatestTradeDate": "2026-10-23",
-   "failureReason": "NO_NEW_MARKET_DATA: no newer trade date than the published one (published {'TPEX': '2026-10-22', 'TWSE': '2026-10-22'}, fetched {'TWSE': '2026-10-22', 'TPEX': '2026-10-22'}); EXPECTED_TRADING_DAY_MISSING: the source is at 2026-10-22 but trading day 2026-10-23 is owed (last attempt of this week's window: this week's publication has FAILED, the previous release stays)",
-   "finishedAt": "2026-10-25T23:34:30+08:00",
+   "failureReason": "NO_NEW_MARKET_DATA: TWSE still 2026-10-22 (owes 2026-10-23), TPEX still 2026-10-22 (owes 2026-10-23)",
+   "finishedAt": "2026-10-26T08:33:46+08:00",
    "marketDates": {
     "TPEX": "2026-10-22",
     "TWSE": "2026-10-22"
    },
-   "publication": "NO_NEW_MARKET_DATA",
+   "publication": "WAITING_FOR_NEW_MARKET_DATA",
    "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-   "publishStatus": "FAILED",
+   "publishStatus": "PENDING",
    "release": null,
-   "requests": 22,
-   "runId": "20261025T233305",
-   "scheduledSlot": "2026-10-25T10:00:00+08:00",
-   "startedAt": "2026-10-25T23:33:05+08:00",
-   "status": "FAILED",
+   "requests": 4,
+   "runId": "20261026T083334",
+   "scheduledSlot": null,
+   "startedAt": "2026-10-26T08:33:34+08:00",
+   "status": "WAITING_FOR_NEW_MARKET_DATA",
    "trigger": "schedule"
-  },
-  "lastSuccessfulPublication": "2026-10-23T08:49:00+08:00",
-  "marketAsOf": {
-   "TPEX": "2026-10-22",
-   "TWSE": "2026-10-22"
-  },
-  "missedWeeklyUpdates": null,
-  "nextScheduledPublication": "2026-11-01T10:00:00+08:00",
-  "retryTimes": [
-   "10:00",
-   "14:00",
-   "20:00"
-  ],
-  "scheduledTime": "10:00",
-  "scheduledWeekday": "SUNDAY",
-  "timezone": "Asia/Taipei",
-  "updatePolicy": "WEEKLY"
- }
+  }
+ ],
+ "schemaVersion": 3,
+ "updatedAt": "2026-10-26T08:33:46+08:00",
+ "weekly": null
 }
