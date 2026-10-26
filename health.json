@@ -20,16 +20,16 @@
     "updatePending": false
    },
    "TWSE": {
-    "expectedMarketDate": "2026-10-22",
-    "lagTradingDays": 0,
+    "expectedMarketDate": "2026-10-23",
+    "lagTradingDays": 1,
     "reason": null,
-    "status": "FRESH",
-    "updatePending": true
+    "status": "STALE",
+    "updatePending": false
    }
   },
   "lastDecision": {
    "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-10-26T08:33:34+08:00",
+   "businessTimeTaipei": "2026-10-27T03:09:06+08:00",
    "companyCount": null,
    "decision": "WAITING_FOR_NEW_MARKET_DATA",
    "lastKnownGoodPreserved": true,
@@ -140,32 +140,12 @@
  "latestOutcome": {
   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
   "publishStatus": "PENDING",
-  "runId": "20261026T083334",
-  "startedAt": "2026-10-26T08:33:34+08:00",
+  "runId": "20261027T030906",
+  "startedAt": "2026-10-27T03:09:06+08:00",
   "status": "WAITING_FOR_NEW_MARKET_DATA"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-10-12",
-   "failureReason": "the exchanges are on different trade dates {'TWSE': '2026-10-12', 'TPEX': '2026-10-13'}: one has not published yet; nothing was published",
-   "finishedAt": "2026-10-13T16:09:30+08:00",
-   "marketDates": {
-    "TPEX": "2026-10-13",
-    "TWSE": "2026-10-12"
-   },
-   "publication": "WAITING",
-   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-   "publishStatus": "PENDING",
-   "release": null,
-   "requests": 21,
-   "runId": "20261013T160356",
-   "scheduledSlot": "2026-10-11T10:00:00+08:00",
-   "startedAt": "2026-10-13T16:03:56+08:00",
-   "status": "WAITING",
-   "trigger": "manual"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-14",
@@ -727,9 +707,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-10-23",
+   "failureReason": "NO_NEW_MARKET_DATA: TWSE still 2026-10-22 (owes 2026-10-23), TPEX still 2026-10-22 (owes 2026-10-23)",
+   "finishedAt": "2026-10-26T08:33:46+08:00",
+   "marketDates": {
+    "TPEX": "2026-10-22",
+    "TWSE": "2026-10-22"
+   },
+   "publication": "WAITING_FOR_NEW_MARKET_DATA",
+   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
+   "publishStatus": "PENDING",
+   "release": null,
+   "requests": 4,
+   "runId": "20261026T083334",
+   "scheduledSlot": null,
+   "startedAt": "2026-10-26T08:33:34+08:00",
+   "status": "WAITING_FOR_NEW_MARKET_DATA",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
     "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-10-26T08:33:34+08:00",
+    "businessTimeTaipei": "2026-10-27T03:09:06+08:00",
     "companyCount": null,
     "decision": "WAITING_FOR_NEW_MARKET_DATA",
     "lastKnownGoodPreserved": true,
@@ -791,7 +791,7 @@
    },
    "expectedLatestTradeDate": "2026-10-23",
    "failureReason": "NO_NEW_MARKET_DATA: TWSE still 2026-10-22 (owes 2026-10-23), TPEX still 2026-10-22 (owes 2026-10-23)",
-   "finishedAt": "2026-10-26T08:33:46+08:00",
+   "finishedAt": "2026-10-27T03:09:21+08:00",
    "marketDates": {
     "TPEX": "2026-10-22",
     "TWSE": "2026-10-22"
@@ -801,14 +801,14 @@
    "publishStatus": "PENDING",
    "release": null,
    "requests": 4,
-   "runId": "20261026T083334",
+   "runId": "20261027T030906",
    "scheduledSlot": null,
-   "startedAt": "2026-10-26T08:33:34+08:00",
+   "startedAt": "2026-10-27T03:09:06+08:00",
    "status": "WAITING_FOR_NEW_MARKET_DATA",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-10-26T08:33:46+08:00",
+ "updatedAt": "2026-10-27T03:09:21+08:00",
  "weekly": null
 }
