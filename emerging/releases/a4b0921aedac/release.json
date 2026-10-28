@@ -1,0 +1,80 @@
+{
+ "companyCount": 366,
+ "files": {
+  "emerging-snapshot.json": {
+   "bytes": 208307,
+   "path": "releases/a4b0921aedac/emerging-snapshot.json",
+   "sha256": "a4b0921aedac1688f31157bbb0a449fd4a941c29997138aaeb07d1e5d6490404"
+  }
+ },
+ "financialAsOf": {
+  "bvpsPeriod": "2026Q2",
+  "epsPeriod": "2026Q2"
+ },
+ "generatedAt": "2026-10-29T02:37:59+08:00",
+ "kind": "emerging-manifest",
+ "lastSuccessfulPublication": "2026-10-29T02:37:59+08:00",
+ "marketAsOf": {
+  "EMERGING": "2026-10-28"
+ },
+ "publicationPolicy": {
+  "attempts": [
+   "21:00",
+   "22:00",
+   "23:00"
+  ],
+  "calendar": {
+   "closedDates": [
+    "2026-01-01",
+    "2026-02-12",
+    "2026-02-13",
+    "2026-02-16",
+    "2026-02-17",
+    "2026-02-18",
+    "2026-02-19",
+    "2026-02-20",
+    "2026-02-27",
+    "2026-04-03",
+    "2026-04-06",
+    "2026-05-01",
+    "2026-06-19",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-10-09",
+    "2026-10-26",
+    "2026-12-25"
+   ],
+   "coveredFrom": "2026-01-01",
+   "coveredTo": "2026-12-31",
+   "extraClosures": [],
+   "fetchedAt": "2026-10-29T02:37:59+08:00",
+   "manualClosures": [],
+   "source": "TWSE_OPENAPI_holidaySchedule"
+  },
+  "markets": {
+   "EMERGING": {
+    "basis": "EMPIRICALLY_OBSERVED",
+    "earliestSeen": "18:00",
+    "evidence": "tpex_esb_latest_statistics Last-Modified 22:00:18 on D=2026-10-07 (1 observation); same TPEx platform as the main board. Operational target: first attempt 21:00 (not a guarantee)",
+    "expectedBy": "21:00",
+    "firstAttempt": "21:00",
+    "offsetDays": 0
+   }
+  },
+  "policy": "DAILY_TRADING_DAY",
+  "scheduleWeekdays": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "timezone": "Asia/Taipei",
+  "windowClosesAt": "24:00"
+ },
+ "publishedAt": "2026-10-29T02:37:59+08:00",
+ "release": "a4b0921aedac",
+ "schemaVersion": "1.0.0",
+ "sourceHash": "a4b0921aedac1688f31157bbb0a449fd4a941c29997138aaeb07d1e5d6490404",
+ "updatePolicy": "DAILY_TRADING_DAY"
+}
