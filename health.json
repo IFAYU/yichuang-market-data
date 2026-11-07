@@ -1,5 +1,5 @@
 {
- "consecutiveFailures": 24,
+ "consecutiveFailures": 25,
  "daily": {
   "attempts": {
    "TPEX": [
@@ -28,8 +28,8 @@
    }
   },
   "lastDecision": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-07T10:57:55+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-07T14:26:08+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -58,11 +58,11 @@
     }
    },
    "publicVerification": "NOT_APPLICABLE",
-   "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
+   "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
    "releaseId": null,
    "sourceCounts": {
-    "requests": 6,
-    "reusedOrCarriedFiles": 12,
+    "requests": 2,
+    "reusedOrCarriedFiles": 16,
     "rows": {
      "tpex.companies": 897,
      "tpex.form_basi": 1,
@@ -95,8 +95,8 @@
  },
  "lastFailure": {
   "daily": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-07T10:57:55+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-07T14:26:08+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -125,11 +125,11 @@
     }
    },
    "publicVerification": "NOT_APPLICABLE",
-   "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
+   "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
    "releaseId": null,
    "sourceCounts": {
-    "requests": 6,
-    "reusedOrCarriedFiles": 12,
+    "requests": 2,
+    "reusedOrCarriedFiles": 16,
     "rows": {
      "tpex.companies": 897,
      "tpex.form_basi": 1,
@@ -153,8 +153,8 @@
    "trigger": "schedule"
   },
   "expectedLatestTradeDate": "2026-11-06",
-  "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
-  "finishedAt": "2026-11-07T10:58:21+08:00",
+  "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
+  "finishedAt": "2026-11-07T14:26:11+08:00",
   "marketDates": {
    "TPEX": "2026-11-06",
    "TWSE": "2026-11-06"
@@ -163,10 +163,10 @@
   "publishReasonCode": "SOURCE_ERROR",
   "publishStatus": "FAILED",
   "release": null,
-  "requests": 6,
-  "runId": "20261107T105755",
+  "requests": 2,
+  "runId": "20261107T142608",
   "scheduledSlot": null,
-  "startedAt": "2026-11-07T10:57:55+08:00",
+  "startedAt": "2026-11-07T14:26:08+08:00",
   "status": "FAILED_SOURCE",
   "trigger": "schedule"
  },
@@ -193,32 +193,12 @@
  "latestOutcome": {
   "publishReasonCode": "SOURCE_ERROR",
   "publishStatus": "FAILED",
-  "runId": "20261107T105755",
-  "startedAt": "2026-11-07T10:57:55+08:00",
+  "runId": "20261107T142608",
+  "startedAt": "2026-11-07T14:26:08+08:00",
   "status": "FAILED_SOURCE"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-10-28",
-   "failureReason": null,
-   "finishedAt": "2026-10-29T02:46:05+08:00",
-   "marketDates": {
-    "TPEX": "2026-10-28",
-    "TWSE": "2026-10-27"
-   },
-   "publication": "PUBLISHED",
-   "publishReasonCode": "NEW_RELEASE",
-   "publishStatus": "PUBLISHED",
-   "release": "80e3d4b35c11",
-   "requests": 3,
-   "runId": "20261029T024544",
-   "scheduledSlot": null,
-   "startedAt": "2026-10-29T02:45:44+08:00",
-   "status": "SUCCESS",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-10-28",
@@ -771,9 +751,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-11-06",
+   "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
+   "finishedAt": "2026-11-07T10:58:21+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-06",
+    "TWSE": "2026-11-06"
+   },
+   "publication": "FAILED_SOURCE",
+   "publishReasonCode": "SOURCE_ERROR",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 6,
+   "runId": "20261107T105755",
+   "scheduledSlot": null,
+   "startedAt": "2026-11-07T10:57:55+08:00",
+   "status": "FAILED_SOURCE",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
-    "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-11-07T10:57:55+08:00",
+    "attemptType": "PRIMARY",
+    "businessTimeTaipei": "2026-11-07T14:26:08+08:00",
     "companyCount": null,
     "decision": "FAILED_SOURCE",
     "lastKnownGoodPreserved": true,
@@ -802,11 +802,11 @@
      }
     },
     "publicVerification": "NOT_APPLICABLE",
-    "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
+    "reason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
     "releaseId": null,
     "sourceCounts": {
-     "requests": 6,
-     "reusedOrCarriedFiles": 12,
+     "requests": 2,
+     "reusedOrCarriedFiles": 16,
      "rows": {
       "tpex.companies": 897,
       "tpex.form_basi": 1,
@@ -830,8 +830,8 @@
     "trigger": "schedule"
    },
    "expectedLatestTradeDate": "2026-11-06",
-   "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
-   "finishedAt": "2026-11-07T10:58:21+08:00",
+   "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
+   "finishedAt": "2026-11-07T14:26:11+08:00",
    "marketDates": {
     "TPEX": "2026-11-06",
     "TWSE": "2026-11-06"
@@ -840,15 +840,15 @@
    "publishReasonCode": "SOURCE_ERROR",
    "publishStatus": "FAILED",
    "release": null,
-   "requests": 6,
-   "runId": "20261107T105755",
+   "requests": 2,
+   "runId": "20261107T142608",
    "scheduledSlot": null,
-   "startedAt": "2026-11-07T10:57:55+08:00",
+   "startedAt": "2026-11-07T14:26:08+08:00",
    "status": "FAILED_SOURCE",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-11-07T10:58:21+08:00",
+ "updatedAt": "2026-11-07T14:26:11+08:00",
  "weekly": null
 }
