@@ -11,9 +11,9 @@
   "bvpsPeriod": "2026Q3",
   "epsPeriod": "2026Q3"
  },
- "generatedAt": "2026-11-10T07:17:21+08:00",
+ "generatedAt": "2026-11-10T07:41:24+08:00",
  "kind": "emerging-manifest",
- "lastSuccessfulPublication": "2026-11-10T07:17:21+08:00",
+ "lastSuccessfulPublication": "2026-11-10T07:41:24+08:00",
  "marketAsOf": {
   "EMERGING": "2026-11-09"
  },
@@ -47,7 +47,7 @@
    "coveredFrom": "2026-01-01",
    "coveredTo": "2026-12-31",
    "extraClosures": [],
-   "fetchedAt": "2026-11-10T07:17:21+08:00",
+   "fetchedAt": "2026-11-10T07:41:24+08:00",
    "manualClosures": [],
    "source": "TWSE_OPENAPI_holidaySchedule"
   },
@@ -72,7 +72,7 @@
   "timezone": "Asia/Taipei",
   "windowClosesAt": "24:00"
  },
- "publishedAt": "2026-11-10T07:17:21+08:00",
+ "publishedAt": "2026-11-10T07:41:24+08:00",
  "release": "cc3d5f0daab0",
  "schemaVersion": "1.0.0",
  "sourceHash": "cc3d5f0daab0924b20c5fb57fb9738a2c4d47f874d0c29d237888fc993d1f7d3",
