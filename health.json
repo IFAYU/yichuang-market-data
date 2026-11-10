@@ -28,8 +28,8 @@
    }
   },
   "lastDecision": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-10T07:38:41+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-10T12:14:38+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -85,8 +85,8 @@
  },
  "lastFailure": {
   "daily": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-10T07:38:41+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-10T12:14:38+08:00",
    "companyCount": null,
    "decision": "FAILED_SOURCE",
    "lastKnownGoodPreserved": true,
@@ -134,7 +134,7 @@
   },
   "expectedLatestTradeDate": "2026-11-09",
   "failureReason": "TWSE: twse.industry_eps: only 296 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
-  "finishedAt": "2026-11-10T07:38:58+08:00",
+  "finishedAt": "2026-11-10T12:14:57+08:00",
   "marketDates": {
    "TPEX": "2026-11-09",
    "TWSE": "2026-11-09"
@@ -144,9 +144,9 @@
   "publishStatus": "FAILED",
   "release": null,
   "requests": 6,
-  "runId": "20261110T073841",
+  "runId": "20261110T121438",
   "scheduledSlot": null,
-  "startedAt": "2026-11-10T07:38:41+08:00",
+  "startedAt": "2026-11-10T12:14:38+08:00",
   "status": "FAILED_SOURCE",
   "trigger": "schedule"
  },
@@ -154,29 +154,12 @@
  "latestOutcome": {
   "publishReasonCode": "SOURCE_ERROR",
   "publishStatus": "FAILED",
-  "runId": "20261110T073841",
-  "startedAt": "2026-11-10T07:38:41+08:00",
+  "runId": "20261110T121438",
+  "startedAt": "2026-11-10T12:14:38+08:00",
   "status": "FAILED_SOURCE"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-10-30",
-   "failureReason": "twse.industry_eps: only 46 rows, expected at least 800 (response suddenly small)",
-   "finishedAt": "2026-11-02T01:38:48+08:00",
-   "marketDates": {},
-   "publication": null,
-   "publishReasonCode": "RUN_FAILED",
-   "publishStatus": "FAILED",
-   "release": null,
-   "requests": 8,
-   "runId": "20261102T013822",
-   "scheduledSlot": "2026-11-01T10:00:00+08:00",
-   "startedAt": "2026-11-02T01:38:22+08:00",
-   "status": "FAILED",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-11-02",
@@ -729,9 +712,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-11-09",
+   "failureReason": "TWSE: twse.industry_eps: only 296 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
+   "finishedAt": "2026-11-10T07:38:58+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-09",
+    "TWSE": "2026-11-09"
+   },
+   "publication": "FAILED_SOURCE",
+   "publishReasonCode": "SOURCE_ERROR",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 6,
+   "runId": "20261110T073841",
+   "scheduledSlot": null,
+   "startedAt": "2026-11-10T07:38:41+08:00",
+   "status": "FAILED_SOURCE",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
-    "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-11-10T07:38:41+08:00",
+    "attemptType": "PRIMARY",
+    "businessTimeTaipei": "2026-11-10T12:14:38+08:00",
     "companyCount": null,
     "decision": "FAILED_SOURCE",
     "lastKnownGoodPreserved": true,
@@ -779,7 +782,7 @@
    },
    "expectedLatestTradeDate": "2026-11-09",
    "failureReason": "TWSE: twse.industry_eps: only 296 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 173 rows, expected at least 600 (response suddenly small)",
-   "finishedAt": "2026-11-10T07:38:58+08:00",
+   "finishedAt": "2026-11-10T12:14:57+08:00",
    "marketDates": {
     "TPEX": "2026-11-09",
     "TWSE": "2026-11-09"
@@ -789,14 +792,14 @@
    "publishStatus": "FAILED",
    "release": null,
    "requests": 6,
-   "runId": "20261110T073841",
+   "runId": "20261110T121438",
    "scheduledSlot": null,
-   "startedAt": "2026-11-10T07:38:41+08:00",
+   "startedAt": "2026-11-10T12:14:38+08:00",
    "status": "FAILED_SOURCE",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-11-10T07:38:58+08:00",
+ "updatedAt": "2026-11-10T12:14:57+08:00",
  "weekly": null
 }
