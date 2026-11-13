@@ -1,21 +1,21 @@
 {
- "companyCount": 370,
+ "companyCount": 373,
  "files": {
   "emerging-snapshot.json": {
-   "bytes": 203993,
-   "path": "releases/7c3a13d7e123/emerging-snapshot.json",
-   "sha256": "7c3a13d7e12331fc82b2da63b99bbb5d6931b26042f074ac81b02651dd002823"
+   "bytes": 205861,
+   "path": "releases/e52d967cf4d8/emerging-snapshot.json",
+   "sha256": "e52d967cf4d86b1795f32117ab46651936bc87db1c66c10dec758c70dd9bc857"
   }
  },
  "financialAsOf": {
   "bvpsPeriod": "2026Q3",
   "epsPeriod": "2026Q3"
  },
- "generatedAt": "2026-11-13T04:37:51+08:00",
+ "generatedAt": "2026-11-14T04:14:36+08:00",
  "kind": "emerging-manifest",
- "lastSuccessfulPublication": "2026-11-13T04:37:51+08:00",
+ "lastSuccessfulPublication": "2026-11-14T04:14:36+08:00",
  "marketAsOf": {
-  "EMERGING": "2026-11-12"
+  "EMERGING": "2026-11-13"
  },
  "publicationPolicy": {
   "attempts": [
@@ -25,29 +25,30 @@
   ],
   "calendar": {
    "closedDates": [
-    "2026-01-01",
-    "2026-02-12",
-    "2026-02-13",
-    "2026-02-16",
-    "2026-02-17",
-    "2026-02-18",
-    "2026-02-19",
-    "2026-02-20",
-    "2026-02-27",
-    "2026-04-03",
-    "2026-04-06",
-    "2026-05-01",
-    "2026-06-19",
-    "2026-09-25",
-    "2026-09-28",
-    "2026-10-09",
-    "2026-10-26",
-    "2026-12-25"
+    "2027-01-01",
+    "2027-02-02",
+    "2027-02-03",
+    "2027-02-04",
+    "2027-02-05",
+    "2027-02-08",
+    "2027-02-09",
+    "2027-02-10",
+    "2027-03-01",
+    "2027-04-05",
+    "2027-04-06",
+    "2027-04-30",
+    "2027-06-09",
+    "2027-09-15",
+    "2027-09-28",
+    "2027-10-11",
+    "2027-10-25",
+    "2027-12-24",
+    "2027-12-31"
    ],
-   "coveredFrom": "2026-01-01",
-   "coveredTo": "2026-12-31",
+   "coveredFrom": "2027-01-01",
+   "coveredTo": "2027-12-31",
    "extraClosures": [],
-   "fetchedAt": "2026-11-13T04:37:51+08:00",
+   "fetchedAt": "2026-11-14T04:14:36+08:00",
    "manualClosures": [],
    "source": "TWSE_OPENAPI_holidaySchedule"
   },
@@ -72,9 +73,9 @@
   "timezone": "Asia/Taipei",
   "windowClosesAt": "24:00"
  },
- "publishedAt": "2026-11-13T04:37:51+08:00",
- "release": "7c3a13d7e123",
+ "publishedAt": "2026-11-14T04:14:36+08:00",
+ "release": "e52d967cf4d8",
  "schemaVersion": "1.0.0",
- "sourceHash": "7c3a13d7e12331fc82b2da63b99bbb5d6931b26042f074ac81b02651dd002823",
+ "sourceHash": "e52d967cf4d86b1795f32117ab46651936bc87db1c66c10dec758c70dd9bc857",
  "updatePolicy": "DAILY_TRADING_DAY"
 }
