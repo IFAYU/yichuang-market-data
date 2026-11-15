@@ -41,34 +41,14 @@
   "trigger": "schedule"
  },
  "latestOutcome": {
-  "publishReasonCode": "NEW_RELEASE",
-  "publishStatus": "PUBLISHED",
-  "runId": "20261115T165138",
-  "startedAt": "2026-11-15T16:51:38+08:00",
-  "status": "SUCCESS"
+  "publishReasonCode": "ALREADY_PUBLISHED",
+  "publishStatus": "NO_UPDATE",
+  "runId": "20261115T212604",
+  "startedAt": "2026-11-15T21:26:04+08:00",
+  "status": "NOOP"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-11-06",
-   "failureReason": "TWSE: twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 125 rows, expected at least 600 (response suddenly small)",
-   "finishedAt": "2026-11-07T10:11:09+08:00",
-   "marketDates": {
-    "TPEX": "2026-11-06",
-    "TWSE": "2026-11-06"
-   },
-   "publication": "FAILED_SOURCE",
-   "publishReasonCode": "SOURCE_ERROR",
-   "publishStatus": "FAILED",
-   "release": null,
-   "requests": 6,
-   "runId": "20261107T101046",
-   "scheduledSlot": null,
-   "startedAt": "2026-11-07T10:10:46+08:00",
-   "status": "FAILED_SOURCE",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-11-06",
@@ -639,10 +619,30 @@
    "startedAt": "2026-11-15T16:51:38+08:00",
    "status": "SUCCESS",
    "trigger": "schedule"
+  },
+  {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-11-13",
+   "failureReason": null,
+   "finishedAt": "2026-11-15T21:26:04+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-13",
+    "TWSE": "2026-11-13"
+   },
+   "publication": "WEEK_ALREADY_PUBLISHED",
+   "publishReasonCode": "ALREADY_PUBLISHED",
+   "publishStatus": "NO_UPDATE",
+   "release": "37ea57ccd003",
+   "requests": 0,
+   "runId": "20261115T212604",
+   "scheduledSlot": "2026-11-15T10:00:00+08:00",
+   "startedAt": "2026-11-15T21:26:04+08:00",
+   "status": "NOOP",
+   "trigger": "schedule"
   }
  ],
  "schemaVersion": 2,
- "updatedAt": "2026-11-15T16:52:43+08:00",
+ "updatedAt": "2026-11-15T21:26:04+08:00",
  "weekly": {
   "freshnessWhenWritten": "FRESH",
   "lastFailureReason": "twse.industry_eps: only 231 rows, expected at least 800 (response suddenly small)",
@@ -650,20 +650,20 @@
    "daily": null,
    "expectedLatestTradeDate": "2026-11-13",
    "failureReason": null,
-   "finishedAt": "2026-11-15T16:52:43+08:00",
+   "finishedAt": "2026-11-15T21:26:04+08:00",
    "marketDates": {
     "TPEX": "2026-11-13",
     "TWSE": "2026-11-13"
    },
-   "publication": "PUBLISHED",
-   "publishReasonCode": "NEW_RELEASE",
-   "publishStatus": "PUBLISHED",
+   "publication": "WEEK_ALREADY_PUBLISHED",
+   "publishReasonCode": "ALREADY_PUBLISHED",
+   "publishStatus": "NO_UPDATE",
    "release": "37ea57ccd003",
-   "requests": 20,
-   "runId": "20261115T165138",
+   "requests": 0,
+   "runId": "20261115T212604",
    "scheduledSlot": "2026-11-15T10:00:00+08:00",
-   "startedAt": "2026-11-15T16:51:38+08:00",
-   "status": "SUCCESS",
+   "startedAt": "2026-11-15T21:26:04+08:00",
+   "status": "NOOP",
    "trigger": "schedule"
   },
   "lastSuccessfulPublication": "2026-11-15T16:51:38+08:00",
