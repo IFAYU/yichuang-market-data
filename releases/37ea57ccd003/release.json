@@ -1,0 +1,95 @@
+{
+ "companyCount": 1996,
+ "files": {
+  "industry-snapshots.json": {
+   "bytes": 456968,
+   "path": "releases/37ea57ccd003/industry-snapshots.json",
+   "sha256": "848cfbb3a5dc297c2a3949501cc39e752af92f73ff31cdc83530e45c276c1498"
+  },
+  "market-snapshot.json": {
+   "bytes": 3720096,
+   "path": "releases/37ea57ccd003/market-snapshot.json",
+   "sha256": "43d64d54807850786ae8ac7cd6c8eeaa22e9e5842f0c29149aa5806358114d7d"
+  }
+ },
+ "financialAsOf": {
+  "epsPeriod": "2026Q3",
+  "eps_basis": "CUMULATIVE_YTD",
+  "monthlyRevenuePeriod": "2026-10"
+ },
+ "freshnessAtPublish": {
+  "calendarNote": "weekends only; exchange holidays are not modelled (conservative: a holiday counts as a missed trading day)",
+  "expectedLatestTradeDate": "2026-11-13",
+  "marketAgeTradingDays": 0,
+  "missedWeeklyUpdates": 0,
+  "status": "FRESH"
+ },
+ "gate": {
+  "checks": [
+   {
+    "detail": "schemaVersion ['1.4.0'], supported 1.x",
+    "name": "schema",
+    "ok": true
+   },
+   {
+    "detail": "coverage and statistics consistent",
+    "name": "coverage",
+    "ok": true
+   },
+   {
+    "detail": "outlier policy, fences and percentile definition present; official P/E basis OFFICIAL_TTM",
+    "name": "methodology",
+    "ok": true
+   },
+   {
+    "detail": "marketAsOf={'TWSE': '2026-11-13', 'TPEX': '2026-11-13'}",
+    "name": "market-date-present",
+    "ok": true
+   },
+   {
+    "detail": "both markets are on the same trade date",
+    "name": "market-date-same",
+    "ok": true
+   },
+   {
+    "detail": "not older than latest {'TPEX': '2026-10-30', 'TWSE': '2026-10-30'}",
+    "name": "not-older-than-latest",
+    "ok": true
+   },
+   {
+    "detail": "newer than the published {'TPEX': '2026-10-30', 'TWSE': '2026-10-30'}",
+    "name": "market-date-advances",
+    "ok": true
+   },
+   {
+    "detail": "candidate would be FRESH (market age 0 trading days, informational)",
+    "name": "freshness-determinable",
+    "ok": true
+   }
+  ],
+  "exceptions": [],
+  "passed": true
+ },
+ "generatedAt": "2026-11-15T16:51:38+08:00",
+ "lastSuccessfulPublication": "2026-11-15T16:51:38+08:00",
+ "marketAsOf": {
+  "TPEX": "2026-11-13",
+  "TWSE": "2026-11-13"
+ },
+ "nextScheduledPublication": "2026-11-22T10:00:00+08:00",
+ "publishedAt": "2026-11-15T16:51:38+08:00",
+ "release": "37ea57ccd003",
+ "retryTimes": [
+  "10:00",
+  "14:00",
+  "20:00"
+ ],
+ "runDate": "2026-11-15",
+ "scheduledTime": "10:00",
+ "scheduledWeekday": "SUNDAY",
+ "schemaVersion": "1.4.0",
+ "sourceFetchedAt": "2026-11-15T16:52:42+08:00",
+ "sourceHash": "37ea57ccd00309d38fb64678a14e6e852baffa84db3a3b6b74af695185616717",
+ "timezone": "Asia/Taipei",
+ "updatePolicy": "WEEKLY"
+}
