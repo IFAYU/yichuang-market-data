@@ -1,5 +1,5 @@
 {
- "consecutiveFailures": 14,
+ "consecutiveFailures": 15,
  "daily": {
   "attempts": {
    "TPEX": [
@@ -29,7 +29,7 @@
   },
   "lastDecision": {
    "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-20T06:01:31+08:00",
+   "businessTimeTaipei": "2026-11-20T06:30:21+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -100,7 +100,7 @@
  "lastFailure": {
   "daily": {
    "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-20T06:01:31+08:00",
+   "businessTimeTaipei": "2026-11-20T06:30:21+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -162,7 +162,7 @@
   },
   "expectedLatestTradeDate": null,
   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-  "finishedAt": "2026-11-20T06:01:49+08:00",
+  "finishedAt": "2026-11-20T06:30:39+08:00",
   "marketDates": {
    "TPEX": "2026-11-19",
    "TWSE": "2026-11-19"
@@ -172,9 +172,9 @@
   "publishStatus": "FAILED",
   "release": null,
   "requests": 4,
-  "runId": "20261120T060131",
+  "runId": "20261120T063021",
   "scheduledSlot": null,
-  "startedAt": "2026-11-20T06:01:31+08:00",
+  "startedAt": "2026-11-20T06:30:21+08:00",
   "status": "FAILED_VALIDATION",
   "trigger": "schedule"
  },
@@ -201,32 +201,12 @@
  "latestOutcome": {
   "publishReasonCode": "GATE_REFUSED",
   "publishStatus": "FAILED",
-  "runId": "20261120T060131",
-  "startedAt": "2026-11-20T06:01:31+08:00",
+  "runId": "20261120T063021",
+  "startedAt": "2026-11-20T06:30:21+08:00",
   "status": "FAILED_VALIDATION"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-11-11",
-   "failureReason": "TWSE: twse.industry_eps: only 397 rows, expected at least 800 (response suddenly small); TPEX: tpex.industry_eps: only 288 rows, expected at least 600 (response suddenly small)",
-   "finishedAt": "2026-11-12T05:39:35+08:00",
-   "marketDates": {
-    "TPEX": "2026-11-11",
-    "TWSE": "2026-11-11"
-   },
-   "publication": "FAILED_SOURCE",
-   "publishReasonCode": "SOURCE_ERROR",
-   "publishStatus": "FAILED",
-   "release": null,
-   "requests": 6,
-   "runId": "20261112T053903",
-   "scheduledSlot": null,
-   "startedAt": "2026-11-12T05:39:03+08:00",
-   "status": "FAILED_SOURCE",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": "2026-11-11",
@@ -788,9 +768,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": null,
+   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
+   "finishedAt": "2026-11-20T06:01:49+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-19",
+    "TWSE": "2026-11-19"
+   },
+   "publication": "REFUSED",
+   "publishReasonCode": "GATE_REFUSED",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 4,
+   "runId": "20261120T060131",
+   "scheduledSlot": null,
+   "startedAt": "2026-11-20T06:01:31+08:00",
+   "status": "FAILED_VALIDATION",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
     "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-11-20T06:01:31+08:00",
+    "businessTimeTaipei": "2026-11-20T06:30:21+08:00",
     "companyCount": null,
     "decision": "FAILED_VALIDATION",
     "lastKnownGoodPreserved": true,
@@ -852,7 +852,7 @@
    },
    "expectedLatestTradeDate": null,
    "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-   "finishedAt": "2026-11-20T06:01:49+08:00",
+   "finishedAt": "2026-11-20T06:30:39+08:00",
    "marketDates": {
     "TPEX": "2026-11-19",
     "TWSE": "2026-11-19"
@@ -862,14 +862,14 @@
    "publishStatus": "FAILED",
    "release": null,
    "requests": 4,
-   "runId": "20261120T060131",
+   "runId": "20261120T063021",
    "scheduledSlot": null,
-   "startedAt": "2026-11-20T06:01:31+08:00",
+   "startedAt": "2026-11-20T06:30:21+08:00",
    "status": "FAILED_VALIDATION",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-11-20T06:01:49+08:00",
+ "updatedAt": "2026-11-20T06:30:39+08:00",
  "weekly": null
 }
