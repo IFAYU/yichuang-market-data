@@ -41,34 +41,14 @@
   "trigger": "schedule"
  },
  "latestOutcome": {
-  "publishReasonCode": "NEW_RELEASE",
-  "publishStatus": "PUBLISHED",
-  "runId": "20261122T172503",
-  "startedAt": "2026-11-22T17:25:03+08:00",
-  "status": "SUCCESS"
+  "publishReasonCode": "ALREADY_PUBLISHED",
+  "publishStatus": "NO_UPDATE",
+  "runId": "20261122T220141",
+  "startedAt": "2026-11-22T22:01:41+08:00",
+  "status": "NOOP"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": null,
-   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-   "finishedAt": "2026-11-14T10:37:09+08:00",
-   "marketDates": {
-    "TPEX": "2026-11-13",
-    "TWSE": "2026-11-13"
-   },
-   "publication": "REFUSED",
-   "publishReasonCode": "GATE_REFUSED",
-   "publishStatus": "FAILED",
-   "release": null,
-   "requests": 11,
-   "runId": "20261114T103635",
-   "scheduledSlot": null,
-   "startedAt": "2026-11-14T10:36:35+08:00",
-   "status": "FAILED_VALIDATION",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": null,
@@ -648,10 +628,30 @@
    "startedAt": "2026-11-22T17:25:03+08:00",
    "status": "SUCCESS",
    "trigger": "schedule"
+  },
+  {
+   "daily": null,
+   "expectedLatestTradeDate": "2026-11-20",
+   "failureReason": null,
+   "finishedAt": "2026-11-22T22:01:41+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-20",
+    "TWSE": "2026-11-20"
+   },
+   "publication": "WEEK_ALREADY_PUBLISHED",
+   "publishReasonCode": "ALREADY_PUBLISHED",
+   "publishStatus": "NO_UPDATE",
+   "release": "180506f52b4f",
+   "requests": 0,
+   "runId": "20261122T220141",
+   "scheduledSlot": "2026-11-22T10:00:00+08:00",
+   "startedAt": "2026-11-22T22:01:41+08:00",
+   "status": "NOOP",
+   "trigger": "schedule"
   }
  ],
  "schemaVersion": 2,
- "updatedAt": "2026-11-22T17:26:09+08:00",
+ "updatedAt": "2026-11-22T22:01:41+08:00",
  "weekly": {
   "freshnessWhenWritten": "FRESH",
   "lastFailureReason": null,
@@ -659,20 +659,20 @@
    "daily": null,
    "expectedLatestTradeDate": "2026-11-20",
    "failureReason": null,
-   "finishedAt": "2026-11-22T17:26:09+08:00",
+   "finishedAt": "2026-11-22T22:01:41+08:00",
    "marketDates": {
     "TPEX": "2026-11-20",
     "TWSE": "2026-11-20"
    },
-   "publication": "PUBLISHED",
-   "publishReasonCode": "NEW_RELEASE",
-   "publishStatus": "PUBLISHED",
+   "publication": "WEEK_ALREADY_PUBLISHED",
+   "publishReasonCode": "ALREADY_PUBLISHED",
+   "publishStatus": "NO_UPDATE",
    "release": "180506f52b4f",
-   "requests": 20,
-   "runId": "20261122T172503",
+   "requests": 0,
+   "runId": "20261122T220141",
    "scheduledSlot": "2026-11-22T10:00:00+08:00",
-   "startedAt": "2026-11-22T17:25:03+08:00",
-   "status": "SUCCESS",
+   "startedAt": "2026-11-22T22:01:41+08:00",
+   "status": "NOOP",
    "trigger": "schedule"
   },
   "lastSuccessfulPublication": "2026-11-22T17:25:03+08:00",
