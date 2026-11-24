@@ -1,5 +1,5 @@
 {
- "consecutiveFailures": 2,
+ "consecutiveFailures": 3,
  "daily": {
   "attempts": {
    "TPEX": [
@@ -29,7 +29,7 @@
   },
   "lastDecision": {
    "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-24T09:32:14+08:00",
+   "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -100,7 +100,7 @@
  "lastFailure": {
   "daily": {
    "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-24T09:32:14+08:00",
+   "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -162,7 +162,7 @@
   },
   "expectedLatestTradeDate": null,
   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-  "finishedAt": "2026-11-24T09:32:41+08:00",
+  "finishedAt": "2026-11-24T09:57:45+08:00",
   "marketDates": {
    "TPEX": "2026-11-23",
    "TWSE": "2026-11-23"
@@ -172,9 +172,9 @@
   "publishStatus": "FAILED",
   "release": null,
   "requests": 4,
-  "runId": "20261124T093214",
+  "runId": "20261124T095723",
   "scheduledSlot": null,
-  "startedAt": "2026-11-24T09:32:14+08:00",
+  "startedAt": "2026-11-24T09:57:23+08:00",
   "status": "FAILED_VALIDATION",
   "trigger": "schedule"
  },
@@ -201,32 +201,12 @@
  "latestOutcome": {
   "publishReasonCode": "GATE_REFUSED",
   "publishStatus": "FAILED",
-  "runId": "20261124T093214",
-  "startedAt": "2026-11-24T09:32:14+08:00",
+  "runId": "20261124T095723",
+  "startedAt": "2026-11-24T09:57:23+08:00",
   "status": "FAILED_VALIDATION"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": "2026-11-13",
-   "failureReason": null,
-   "finishedAt": "2026-11-16T02:28:30+08:00",
-   "marketDates": {
-    "TPEX": "2026-11-13",
-    "TWSE": "2026-11-13"
-   },
-   "publication": "WEEK_ALREADY_PUBLISHED",
-   "publishReasonCode": "ALREADY_PUBLISHED",
-   "publishStatus": "NO_UPDATE",
-   "release": "37ea57ccd003",
-   "requests": 0,
-   "runId": "20261116T022830",
-   "scheduledSlot": "2026-11-15T10:00:00+08:00",
-   "startedAt": "2026-11-16T02:28:30+08:00",
-   "status": "NOOP",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": null,
@@ -788,9 +768,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": null,
+   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
+   "finishedAt": "2026-11-24T09:32:41+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-23",
+    "TWSE": "2026-11-23"
+   },
+   "publication": "REFUSED",
+   "publishReasonCode": "GATE_REFUSED",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 4,
+   "runId": "20261124T093214",
+   "scheduledSlot": null,
+   "startedAt": "2026-11-24T09:32:14+08:00",
+   "status": "FAILED_VALIDATION",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
     "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-11-24T09:32:14+08:00",
+    "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
     "companyCount": null,
     "decision": "FAILED_VALIDATION",
     "lastKnownGoodPreserved": true,
@@ -852,7 +852,7 @@
    },
    "expectedLatestTradeDate": null,
    "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-   "finishedAt": "2026-11-24T09:32:41+08:00",
+   "finishedAt": "2026-11-24T09:57:45+08:00",
    "marketDates": {
     "TPEX": "2026-11-23",
     "TWSE": "2026-11-23"
@@ -862,14 +862,14 @@
    "publishStatus": "FAILED",
    "release": null,
    "requests": 4,
-   "runId": "20261124T093214",
+   "runId": "20261124T095723",
    "scheduledSlot": null,
-   "startedAt": "2026-11-24T09:32:14+08:00",
+   "startedAt": "2026-11-24T09:57:23+08:00",
    "status": "FAILED_VALIDATION",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-11-24T09:32:41+08:00",
+ "updatedAt": "2026-11-24T09:57:45+08:00",
  "weekly": null
 }
