@@ -1,5 +1,5 @@
 {
- "consecutiveFailures": 3,
+ "consecutiveFailures": 4,
  "daily": {
   "attempts": {
    "TPEX": [
@@ -28,8 +28,8 @@
    }
   },
   "lastDecision": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-24T14:16:06+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -99,8 +99,8 @@
  },
  "lastFailure": {
   "daily": {
-   "attemptType": "MORNING_TWSE",
-   "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
+   "attemptType": "PRIMARY",
+   "businessTimeTaipei": "2026-11-24T14:16:06+08:00",
    "companyCount": null,
    "decision": "FAILED_VALIDATION",
    "lastKnownGoodPreserved": true,
@@ -162,7 +162,7 @@
   },
   "expectedLatestTradeDate": null,
   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-  "finishedAt": "2026-11-24T09:57:45+08:00",
+  "finishedAt": "2026-11-24T14:16:28+08:00",
   "marketDates": {
    "TPEX": "2026-11-23",
    "TWSE": "2026-11-23"
@@ -172,9 +172,9 @@
   "publishStatus": "FAILED",
   "release": null,
   "requests": 4,
-  "runId": "20261124T095723",
+  "runId": "20261124T141606",
   "scheduledSlot": null,
-  "startedAt": "2026-11-24T09:57:23+08:00",
+  "startedAt": "2026-11-24T14:16:06+08:00",
   "status": "FAILED_VALIDATION",
   "trigger": "schedule"
  },
@@ -201,32 +201,12 @@
  "latestOutcome": {
   "publishReasonCode": "GATE_REFUSED",
   "publishStatus": "FAILED",
-  "runId": "20261124T095723",
-  "startedAt": "2026-11-24T09:57:23+08:00",
+  "runId": "20261124T141606",
+  "startedAt": "2026-11-24T14:16:06+08:00",
   "status": "FAILED_VALIDATION"
  },
  "retained": 30,
  "runs": [
-  {
-   "daily": null,
-   "expectedLatestTradeDate": null,
-   "failureReason": "CALENDAR_UNKNOWN: no market moved and a holiday cannot be proven",
-   "finishedAt": "2026-11-16T10:19:27+08:00",
-   "marketDates": {
-    "TPEX": "2026-11-13",
-    "TWSE": "2026-11-13"
-   },
-   "publication": "WAITING_FOR_NEW_MARKET_DATA",
-   "publishReasonCode": "EXPECTED_TRADING_DAY_MISSING",
-   "publishStatus": "PENDING",
-   "release": null,
-   "requests": 4,
-   "runId": "20261116T101910",
-   "scheduledSlot": null,
-   "startedAt": "2026-11-16T10:19:10+08:00",
-   "status": "WAITING_FOR_NEW_MARKET_DATA",
-   "trigger": "schedule"
-  },
   {
    "daily": null,
    "expectedLatestTradeDate": null,
@@ -788,9 +768,29 @@
    "trigger": "schedule"
   },
   {
+   "daily": null,
+   "expectedLatestTradeDate": null,
+   "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
+   "finishedAt": "2026-11-24T09:57:45+08:00",
+   "marketDates": {
+    "TPEX": "2026-11-23",
+    "TWSE": "2026-11-23"
+   },
+   "publication": "REFUSED",
+   "publishReasonCode": "GATE_REFUSED",
+   "publishStatus": "FAILED",
+   "release": null,
+   "requests": 4,
+   "runId": "20261124T095723",
+   "scheduledSlot": null,
+   "startedAt": "2026-11-24T09:57:23+08:00",
+   "status": "FAILED_VALIDATION",
+   "trigger": "schedule"
+  },
+  {
    "daily": {
-    "attemptType": "MORNING_TWSE",
-    "businessTimeTaipei": "2026-11-24T09:57:23+08:00",
+    "attemptType": "PRIMARY",
+    "businessTimeTaipei": "2026-11-24T14:16:06+08:00",
     "companyCount": null,
     "decision": "FAILED_VALIDATION",
     "lastKnownGoodPreserved": true,
@@ -852,7 +852,7 @@
    },
    "expectedLatestTradeDate": null,
    "failureReason": "freshness-determinable: UNKNOWN: ['TWSE', 'TPEX']",
-   "finishedAt": "2026-11-24T09:57:45+08:00",
+   "finishedAt": "2026-11-24T14:16:28+08:00",
    "marketDates": {
     "TPEX": "2026-11-23",
     "TWSE": "2026-11-23"
@@ -862,14 +862,14 @@
    "publishStatus": "FAILED",
    "release": null,
    "requests": 4,
-   "runId": "20261124T095723",
+   "runId": "20261124T141606",
    "scheduledSlot": null,
-   "startedAt": "2026-11-24T09:57:23+08:00",
+   "startedAt": "2026-11-24T14:16:06+08:00",
    "status": "FAILED_VALIDATION",
    "trigger": "schedule"
   }
  ],
  "schemaVersion": 3,
- "updatedAt": "2026-11-24T09:57:45+08:00",
+ "updatedAt": "2026-11-24T14:16:28+08:00",
  "weekly": null
 }
