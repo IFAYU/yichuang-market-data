@@ -2,20 +2,20 @@
  "companyCount": 377,
  "files": {
   "emerging-snapshot.json": {
-   "bytes": 208328,
-   "path": "releases/f6c2bef2e3e0/emerging-snapshot.json",
-   "sha256": "f6c2bef2e3e0b3f7c9665c1b13d6afe1cea59f6b0e3e593c68dd338f70da06ab"
+   "bytes": 208305,
+   "path": "releases/727d7a75f8cd/emerging-snapshot.json",
+   "sha256": "727d7a75f8cd441027a4b2a2b600b93cd23fb78705c552433519bdebefd5a739"
   }
  },
  "financialAsOf": {
   "bvpsPeriod": "2026Q3",
   "epsPeriod": "2026Q3"
  },
- "generatedAt": "2026-11-27T06:04:31+08:00",
+ "generatedAt": "2026-11-28T05:46:41+08:00",
  "kind": "emerging-manifest",
- "lastSuccessfulPublication": "2026-11-27T06:04:31+08:00",
+ "lastSuccessfulPublication": "2026-11-28T05:46:41+08:00",
  "marketAsOf": {
-  "EMERGING": "2026-11-26"
+  "EMERGING": "2026-11-27"
  },
  "publicationPolicy": {
   "attempts": [
@@ -48,7 +48,7 @@
    "coveredFrom": "2027-01-01",
    "coveredTo": "2027-12-31",
    "extraClosures": [],
-   "fetchedAt": "2026-11-27T06:04:31+08:00",
+   "fetchedAt": "2026-11-28T05:46:41+08:00",
    "manualClosures": [],
    "source": "TWSE_OPENAPI_holidaySchedule"
   },
@@ -73,9 +73,9 @@
   "timezone": "Asia/Taipei",
   "windowClosesAt": "24:00"
  },
- "publishedAt": "2026-11-27T06:04:31+08:00",
- "release": "f6c2bef2e3e0",
+ "publishedAt": "2026-11-28T05:46:41+08:00",
+ "release": "727d7a75f8cd",
  "schemaVersion": "1.0.0",
- "sourceHash": "f6c2bef2e3e0b3f7c9665c1b13d6afe1cea59f6b0e3e593c68dd338f70da06ab",
+ "sourceHash": "727d7a75f8cd441027a4b2a2b600b93cd23fb78705c552433519bdebefd5a739",
  "updatePolicy": "DAILY_TRADING_DAY"
 }
